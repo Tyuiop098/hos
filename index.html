@@ -3,515 +3,546 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Roblox Vet Simulator - Premium UI</title>
-<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<title>Vet Simulator - Roblox Edition (Enhanced)</title>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
-* { margin:0; padding:0; box-sizing:border-box; }
-body {
-  font-family: 'Kanit', sans-serif;
-  background: radial-gradient(circle at center, #1e222d, #0d0f14);
-  color: #FFFFFF;
-  height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  user-select: none;
-}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Kanit',sans-serif;background:#0a0c0f;color:#fff;height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden;user-select:none}
+.gc{width:900px;height:570px;background:#1a1c20;border:2px solid #2e3035;border-radius:10px;position:relative;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.9)}
+.screen{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:5rem 2rem 2rem;transition:opacity .2s,transform .2s;text-align:center;opacity:1;transform:scale(1)}
+.screen.out{opacity:0;transform:scale(.98);pointer-events:none}
+.topbar{position:absolute;top:0;left:0;right:0;display:flex;justify-content:space-between;align-items:center;padding:.8rem 1.5rem;background:#111318;border-bottom:2px solid #2e3035;z-index:100}
+.topbar-left{display:flex;align-items:center;gap:1rem}
+.game-title{font-weight:700;font-size:1rem;color:#6b7280}
+.score{color:#10d97e;font-size:1.4rem;font-weight:800}
+.multiplier{background:#10d97e22;border:1px solid #10d97e55;color:#10d97e;padding:.2rem .6rem;border-radius:4px;font-size:.85rem;font-weight:700}
+.streak{color:#f59e0b;font-size:.9rem;font-weight:700}
+.timer-wrap{display:flex;align-items:center;gap:.5rem}
+.timer{font-size:1.4rem;font-weight:800}
+.timer.urgent{color:#ef4444;animation:pulse .5s infinite}
+.timer.ok{color:#10d97e}
+.timer.warn{color:#f59e0b}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.hp-bar-wrap{width:120px;height:8px;background:#2e3035;border-radius:4px;overflow:hidden}
+.hp-bar{height:100%;background:#10d97e;border-radius:4px;transition:width .3s,background .3s}
 
-/* ── GAME CONTAINER (MODERN GLASSMORPHISM) ── */
-.game-container {
-  width: 960px;
-  height: 560px;
-  background: rgba(26, 29, 39, 0.85);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 20px;
-  position: relative;
-  overflow: hidden;
-  box-shadow: 0 25px 50px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.1);
-}
+.patient-card{display:flex;align-items:center;gap:1.5rem;background:#111318;border:2px solid #2e3035;border-radius:10px;padding:1rem 2rem;margin-bottom:1.5rem;min-width:420px;position:relative}
+.patient-emoji{font-size:5rem;background:#1a1c20;border-radius:8px;padding:.8rem;border:1px solid #2e3035;position:relative}
+.rarity-badge{position:absolute;top:-8px;left:-8px;font-size:.65rem;font-weight:800;padding:.2rem .5rem;border-radius:4px;text-transform:uppercase;letter-spacing:.05em}
+.rarity-common{background:#4b5563;color:#d1d5db}
+.rarity-rare{background:#1d4ed8;color:#93c5fd}
+.rarity-epic{background:#7c3aed;color:#c4b5fd}
+.rarity-legendary{background:#b45309;color:#fcd34d;animation:glow-gold .8s ease-in-out infinite alternate}
+@keyframes glow-gold{from{box-shadow:0 0 4px #f59e0b}to{box-shadow:0 0 12px #f59e0b,0 0 20px #f59e0b44}}
+.patient-info{text-align:left}
+.patient-name{font-size:2rem;font-weight:800}
+.patient-condition{font-size:.9rem;color:#ef4444;font-weight:700;background:#ef444415;padding:.2rem .8rem;border-radius:4px;display:inline-block;margin:.3rem 0}
+.patient-tag{font-size:.8rem;color:#9ca3af;display:block}
+.bonus-tag{font-size:.8rem;color:#f59e0b;font-weight:700;background:#f59e0b15;padding:.15rem .5rem;border-radius:3px;display:inline-block;margin-top:.2rem}
 
-/* ── SCREEN WRAPPER ── */
-.screen {
-  position: absolute;
-  top: 0; left: 0; width: 100%; height: 100%;
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  padding: 2.5rem;
-  transition: opacity 0.25s ease, transform 0.25s ease;
-  text-align: center;
-  opacity: 1;
-  transform: scale(1);
-}
-.screen.out {
-  opacity: 0;
-  transform: scale(0.96);
-  pointer-events: none;
-}
+.step-num{font-size:.8rem;font-weight:700;color:#10d97e;letter-spacing:.15em;text-transform:uppercase;margin-bottom:.3rem}
+.big-label{font-size:2.5rem;font-weight:800;line-height:1.2;margin-bottom:.3rem}
+.sub-label{font-size:1rem;color:#9ca3af;margin-bottom:1.5rem}
 
-/* ── TOP BAR ── */
-.topbar {
-  position: absolute; top: 0; left: 0; right: 0;
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 1.2rem 2rem;
-  background: rgba(13, 15, 20, 0.6);
-  border-bottom: 1px solid rgba(255,255,255,0.08);
-  font-weight: 600; font-size: 1.1rem;
-  z-index: 100;
-}
-.score-badge { 
-  background: rgba(0, 176, 111, 0.15); 
-  border: 1px solid #00b06f; 
-  color: #00ff9d; 
-  padding: 0.3rem 1rem; 
-  border-radius: 999px;
-  font-weight: 700;
-}
-.timer { font-size: 1.3rem; font-weight: 700; color: #fff; }
-.timer.urgent { color: #ff4757; animation: pulseTime 0.5s infinite alternate; }
-@keyframes pulseTime { from { opacity: 1; } to { opacity: 0.4; } }
+.btn-hint{background:#10d97e;color:#fff;font-family:inherit;font-weight:700;font-size:1.1rem;border:none;border-radius:8px;padding:.7rem 1.8rem;border-bottom:4px solid #0aad64;display:inline-flex;align-items:center;gap:.5rem;transition:transform .1s;cursor:pointer}
+.btn-hint.active{transform:translateY(4px);border-bottom-width:0;margin-top:4px}
+.key-icon{background:#fff;color:#000;padding:.15rem .6rem;border-radius:4px;font-weight:900;border-bottom:3px solid #ccc}
 
-/* ── PATIENT CARD ── */
-.patient-card {
-  display: flex; align-items: center; justify-content: center; gap: 2rem;
-  background: rgba(35, 39, 51, 0.6);
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 16px;
-  padding: 1.5rem 3rem;
-  margin-bottom: 2rem;
-  min-width: 480px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-}
-.patient-emoji { 
-  font-size: 5rem; 
-  background: rgba(18, 20, 27, 0.8); 
-  border-radius: 12px; 
-  padding: 0.8rem 1.2rem;
-  border: 1px solid rgba(255,255,255,0.05);
-}
-.patient-info { text-align: left; }
-.patient-name  { font-size: 2.2rem; font-weight: 800; letter-spacing: 0.5px; }
-.patient-tag   {
-  display: inline-block; margin-top: 0.4rem;
-  background: rgba(0, 176, 111, 0.2);
-  color: #00ff9d;
-  padding: 0.2rem 0.8rem; border-radius: 6px;
-  font-size: 0.95rem; font-weight: 600;
-}
+.flash-overlay{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:999;transition:opacity .08s}
+.flash-overlay.on{opacity:1}
+.red-flash{position:absolute;inset:0;background:#ef4444;opacity:0;pointer-events:none;z-index:998}
+.red-flash.on{animation:red-pulse .4s ease-out forwards}
+@keyframes red-pulse{0%{opacity:.25}100%{opacity:0}}
 
-/* ── TYPOGRAPHY ── */
-.big-label { font-size: 2.8rem; font-weight: 800; line-height: 1.2; margin-bottom: 0.5rem; letter-spacing: -0.5px; }
-.sub-label { font-size: 1.15rem; color: #94a3b8; margin-bottom: 2rem; font-weight: 400; }
+.progress-wrap{width:100%;max-width:550px;margin:1rem auto}
+.progress-track{background:#111318;border:2px solid #2e3035;border-radius:8px;height:36px;overflow:hidden;position:relative}
+.progress-fill{height:100%;width:0%;background:linear-gradient(90deg,#0aad64,#10d97e)}
+.progress-text{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:700;text-shadow:1px 1px 2px rgba(0,0,0,.8)}
 
-/* ── ROBLOX PREMIUM BUTTON HINT ── */
-.btn-hint {
-  background: linear-gradient(135deg, #00b06f, #008f5a);
-  color: #ffffff;
-  font-family: inherit; font-weight: 700; font-size: 1.15rem;
-  border: none; border-radius: 12px;
-  padding: 0.9rem 2.2rem;
-  box-shadow: 0 6px 20px rgba(0, 176, 111, 0.4), inset 0 2px 0 rgba(255,255,255,0.2);
-  display: inline-flex; align-items: center; gap: 0.8rem;
-  transition: transform 0.1s, box-shadow 0.1s;
-}
-.btn-hint.active { transform: scale(0.96); box-shadow: 0 2px 10px rgba(0, 176, 111, 0.4); }
-.key-icon {
-  background: #ffffff; color: #111;
-  padding: 0.15rem 0.7rem; border-radius: 6px; font-weight: 900; font-size: 1rem;
-  box-shadow: 0 3px 0 #cbd5e1;
-}
+.diag-box{background:#111318;border:1px solid #2e3035;border-radius:8px;padding:1rem 1.5rem;margin-bottom:1rem;text-align:left;min-width:420px}
+.diag-row{display:flex;justify-content:space-between;align-items:center;padding:.3rem 0;border-bottom:1px solid #2e303522}
+.diag-row:last-child{border-bottom:none}
+.diag-label{color:#6b7280;font-size:.9rem}
+.diag-value{font-weight:700;font-size:.9rem}
+.diag-crit{color:#ef4444}
+.diag-ok{color:#10d97e}
+.diag-warn{color:#f59e0b}
 
-/* ── CAMERA FLASH ── */
-.flash-overlay {
-  position: absolute; inset: 0; background: #ffffff;
-  opacity: 0; pointer-events: none; z-index: 999; transition: opacity 0.1s;
-}
-.flash-overlay.on { opacity: 1; }
+.treat-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem;max-width:480px}
+.treat-item{background:#111318;border:2px solid #2e3035;border-radius:8px;padding:1rem;text-align:center;cursor:pointer;transition:border-color .15s,transform .1s}
+.treat-item:hover{border-color:#10d97e;transform:translateY(-2px)}
+.treat-item.selected{border-color:#10d97e;background:#10d97e15}
+.treat-item.wrong{border-color:#ef4444;background:#ef444415;animation:shake .3s}
+.treat-icon{font-size:2.5rem;margin-bottom:.3rem}
+.treat-name{font-size:.95rem;font-weight:700}
+.treat-key{font-size:.7rem;color:#6b7280;margin-top:.2rem}
 
-/* ── PROGRESS BAR ── */
-.progress-wrap { width: 100%; max-width: 620px; margin: 2rem auto; }
-.progress-track {
-  background: rgba(13, 15, 20, 0.8); 
-  border: 1px solid rgba(255,255,255,0.1); 
-  border-radius: 14px; height: 46px;
-  overflow: hidden; position: relative;
-  box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
-}
-.progress-fill { 
-  height: 100%; width: 0%; 
-  background: linear-gradient(90deg, #00b06f, #00ff9d);
-  box-shadow: 0 0 15px rgba(0,255,157,0.5);
-}
-.progress-text {
-  position: absolute; inset: 0;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 1.15rem; font-weight: 700; color: #ffffff;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.8);
-}
+.treat-instruction{background:#f59e0b15;border:1px solid #f59e0b44;border-radius:6px;padding:.6rem 1rem;color:#fbbf24;font-weight:700;font-size:.9rem;margin-bottom:1rem;max-width:480px}
 
-/* ── TREATMENT BOX ── */
-.treat-box {
-  background: rgba(35, 39, 51, 0.6); 
-  border: 1px solid rgba(0, 176, 111, 0.4); 
-  border-radius: 16px;
-  padding: 2rem 3.5rem; display: inline-flex; flex-direction: column; align-items: center;
-  margin-bottom: 2rem;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-}
-.treat-icon { font-size: 5rem; margin-bottom: 0.5rem; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.3)); }
-.treat-name { font-size: 1.8rem; font-weight: 700; color: #00ff9d; }
+.minigame-area{background:#111318;border:2px solid #10d97e33;border-radius:10px;padding:1.5rem;margin-bottom:1rem;min-width:420px;text-align:center}
+.click-target{width:80px;height:80px;background:#10d97e22;border:3px solid #10d97e;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:2rem;cursor:pointer;transition:transform .1s,background .1s;margin:0 auto}
+.click-target:active{transform:scale(.9);background:#10d97e44}
+.click-progress{margin-top:.8rem;height:10px;background:#2e3035;border-radius:5px;overflow:hidden}
+.click-fill{height:100%;background:#10d97e;border-radius:5px;transition:width .1s}
+.click-label{font-size:.85rem;color:#6b7280;margin-top:.4rem}
 
-/* ── PRINTER ANIMATION ── */
-.printer-icon { font-size: 6rem; margin-bottom: 1rem; position: relative; }
-.paper-slip { 
-  position: absolute; bottom: -15px; left: 50%; transform: translateX(-50%);
-  font-size: 2rem; opacity: 0; transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-.printer-icon.printing .paper-slip { bottom: -45px; opacity: 1; }
+.pts-big{font-size:3.5rem;font-weight:800;color:#10d97e}
+.pts-breakdown{font-size:.9rem;color:#9ca3af;margin:.3rem 0}
+.pts-bonus{color:#f59e0b;font-weight:700}
+.result-grid{display:flex;gap:1.5rem;margin:.5rem 0;justify-content:center}
+.result-item{text-align:center}
+.result-num{font-size:1.5rem;font-weight:800}
+.result-lbl{font-size:.75rem;color:#6b7280}
 
-/* ── SUCCESS ── */
-.success-icon { font-size: 5.5rem; margin-bottom: 0.5rem; animation: bounceIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
-@keyframes bounceIn { from { transform: scale(0); } to { transform: scale(1); } }
+.notif{position:absolute;top:60px;right:10px;background:#111318;border:1px solid #2e3035;border-radius:6px;padding:.5rem 1rem;font-size:.85rem;font-weight:700;opacity:0;transform:translateY(-10px);transition:all .3s;z-index:500}
+.notif.show{opacity:1;transform:translateY(0)}
+.notif.success-n{border-color:#10d97e;color:#10d97e}
+.notif.fail-n{border-color:#ef4444;color:#ef4444}
+.notif.bonus-n{border-color:#f59e0b;color:#f59e0b}
+
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+
+.end-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;max-width:500px;margin:1rem auto}
+.end-card{background:#111318;border:1px solid #2e3035;border-radius:8px;padding:.8rem}
+.end-num{font-size:1.8rem;font-weight:800;color:#10d97e}
+.end-lbl{font-size:.75rem;color:#6b7280}
+
+.combo-popup{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:3rem;font-weight:800;color:#f59e0b;text-shadow:0 0 20px #f59e0b44;pointer-events:none;opacity:0;z-index:600}
+.combo-popup.show{animation:combo-anim .8s ease-out forwards}
+@keyframes combo-anim{0%{opacity:1;transform:translate(-50%,-60%) scale(.8)}50%{opacity:1;transform:translate(-50%,-70%) scale(1.2)}100%{opacity:0;transform:translate(-50%,-90%) scale(1)}}
 </style>
 </head>
 <body>
-
-<div class="game-container">
-  <div class="flash-overlay" id="flashOverlay"></div>
+<div class="gc" id="gc">
+  <div class="flash-overlay" id="flashOv"></div>
+  <div class="red-flash" id="redFlash"></div>
+  <div class="notif" id="notif"></div>
+  <div class="combo-popup" id="comboPop"></div>
 
   <div class="topbar" id="topbar" style="display:none">
-    <div>🏥 Vet Simulator PRO</div>
-    <div class="score-badge" id="scoreDisp">Score: 0</div>
-    <div class="timer" id="timerDisp">180s</div> 
+    <div class="topbar-left">
+      <div class="game-title">🏥 VET SIM</div>
+      <div class="score" id="scoreDisp">0</div>
+      <div class="multiplier" id="multDisp">x1</div>
+      <div class="streak" id="streakDisp"></div>
+    </div>
+    <div class="timer-wrap">
+      <div class="hp-bar-wrap"><div class="hp-bar" id="hpBar" style="width:100%"></div></div>
+      <div class="timer ok" id="timerDisp">180s</div>
+    </div>
   </div>
 
   <div class="screen" id="titleScreen">
-    <div style="font-size:5.5rem;margin-bottom:0.5rem">🐾</div>
-    <div class="big-label">Vet Simulator</div>
-    <div class="sub-label">ระบบจำลองโรงพยาบาลสัตว์สุดสมจริง (Pro UI Edition)</div>
-    <div class="btn-hint" id="btn-start">
-      กด <span class="key-icon">SPACE</span> เพื่อเริ่มเกม
+    <div style="font-size:5rem;margin-bottom:.5rem">🏥</div>
+    <div class="big-label" style="font-size:3rem">Vet Simulator</div>
+    <div style="font-size:.85rem;color:#6b7280;margin:.5rem 0 .3rem">Roblox Edition • Enhanced</div>
+    <div style="color:#9ca3af;font-size:.9rem;margin-bottom:.8rem">ถ่ายรูป → ปริ้นบัตร → วิเคราะห์ → เลือกรักษา → มินิเกม</div>
+    <div style="display:flex;gap:.5rem;margin-bottom:1.5rem;flex-wrap:wrap;justify-content:center">
+      <span style="background:#10d97e15;color:#10d97e;border:1px solid #10d97e33;padding:.2rem .7rem;border-radius:4px;font-size:.8rem;font-weight:700">🔥 Combo System</span>
+      <span style="background:#7c3aed15;color:#c4b5fd;border:1px solid #7c3aed33;padding:.2rem .7rem;border-radius:4px;font-size:.8rem;font-weight:700">💎 4 Rarity Types</span>
+      <span style="background:#f59e0b15;color:#f59e0b;border:1px solid #f59e0b33;padding:.2rem .7rem;border-radius:4px;font-size:.8rem;font-weight:700">⚡ Mini-games</span>
     </div>
+    <div class="btn-hint" id="btn-start">กด <span class="key-icon">SPACE</span> เพื่อเริ่มเกม</div>
+    <div style="color:#374151;font-size:.75rem;margin-top:1rem">ใช้ปุ่มตัวเลข 1-4 เลือกการรักษา • SPACE ยืนยัน</div>
   </div>
 
   <div class="screen out" id="s1">
     <div class="patient-card">
-      <div class="patient-emoji" id="p1emoji"></div>
+      <div class="patient-emoji">
+        <div class="rarity-badge" id="rarityBadge">COMMON</div>
+        <span id="p1emoji"></span>
+      </div>
       <div class="patient-info">
         <div class="patient-name" id="p1name"></div>
+        <div class="patient-condition" id="p1cond"></div>
         <div class="patient-tag" id="p1tag"></div>
+        <div class="bonus-tag" id="p1bonus" style="display:none"></div>
       </div>
     </div>
-    <div class="big-label">STEP 1: ถ่ายรูป</div>
-    <div class="sub-label">ถ่ายรูปสัตว์เลี้ยงเพื่อบันทึกประวัติเข้าระบบ</div>
-    <div class="btn-hint" id="btn-s1">
-      กด <span class="key-icon">SPACE</span> เพื่อถ่ายรูป 📸
-    </div>
+    <div class="step-num">STEP 1 / 4</div>
+    <div class="big-label">ถ่ายรูปผู้ป่วย</div>
+    <div class="sub-label" id="urgencyHint">บันทึกภาพเพื่อเก็บประวัติเข้าระบบ</div>
+    <div class="btn-hint" id="btn-s1">กด <span class="key-icon">SPACE</span> ถ่ายรูป 📸</div>
   </div>
 
   <div class="screen out" id="s2">
-    <div class="printer-icon" id="printerAnim">
-      🖨️
-      <div class="paper-slip">📄</div>
+    <div style="font-size:5rem;margin-bottom:.5rem;position:relative" id="printerAnim">
+      🖨️<div class="paper-slip" id="paperSlip" style="position:absolute;bottom:-15px;left:50%;transform:translateX(-50%);font-size:1.8rem;opacity:0;transition:all .5s">📄</div>
     </div>
-    <div class="big-label">STEP 2: ปริ้นบัตรคิว</div>
-    <div class="sub-label">ออกบัตรคนไข้เพื่อส่งตัวเข้าห้องตรวจ</div>
-    <div class="btn-hint" id="btn-s2">
-      กด <span class="key-icon">SPACE</span> เพื่อปริ้นบัตร
-    </div>
+    <div class="step-num">STEP 2 / 4</div>
+    <div class="big-label">ปริ้นบัตรผู้ป่วย</div>
+    <div class="sub-label">ออกบัตรเพื่อเตรียมส่งเข้าห้องตรวจ</div>
+    <div class="btn-hint" id="btn-s2">กด <span class="key-icon">SPACE</span> ปริ้นบัตร</div>
   </div>
 
   <div class="screen out" id="s3">
-    <div class="big-label">STEP 3: ประมวลผลอาการ</div>
-    <div class="sub-label">ระบบกำลังวิเคราะห์ข้อมูลสุขภาพ 10 วินาที</div>
+    <div class="step-num">STEP 3 / 4</div>
+    <div class="big-label">กำลังวิเคราะห์อาการ...</div>
     <div class="progress-wrap">
       <div class="progress-track">
         <div class="progress-fill" id="procFill"></div>
-        <div class="progress-text" id="procText">กำลังประมวลผล... 10s</div>
+        <div class="progress-text" id="procText">Processing...</div>
       </div>
+    </div>
+    <div class="diag-box" id="diagBox" style="display:none">
+      <div style="font-size:.8rem;font-weight:700;color:#6b7280;letter-spacing:.1em;margin-bottom:.5rem">📋 ผลการวิเคราะห์</div>
+      <div class="diag-row"><span class="diag-label">สัตว์เลี้ยง</span><span class="diag-value" id="dName">-</span></div>
+      <div class="diag-row"><span class="diag-label">อาการ</span><span class="diag-value diag-crit" id="dCond">-</span></div>
+      <div class="diag-row"><span class="diag-label">ความรุนแรง</span><span class="diag-value" id="dSev">-</span></div>
+      <div class="diag-row"><span class="diag-label">วิธีรักษา</span><span class="diag-value diag-warn" id="dHint">-</span></div>
     </div>
   </div>
 
   <div class="screen out" id="s4">
-    <div class="big-label">STEP 4: ทำการรักษา</div>
-    <div class="treat-box">
-      <div class="treat-icon" id="tIcon">💉</div>
-      <div class="treat-name" id="tName">ฉีดยา</div>
+    <div class="step-num">STEP 4 / 4</div>
+    <div class="big-label" style="font-size:1.8rem;margin-bottom:.3rem">เลือกวิธีรักษาที่ถูกต้อง!</div>
+    <div class="treat-instruction" id="treatHint"></div>
+    <div class="treat-grid" id="treatGrid"></div>
+    <div style="font-size:.8rem;color:#374151">กด 1-4 หรือคลิกเพื่อเลือก</div>
+  </div>
+
+  <div class="screen out" id="s4b">
+    <div class="step-num">MINI-GAME!</div>
+    <div class="big-label" style="font-size:1.8rem" id="mgTitle">ฉีดยา</div>
+    <div class="sub-label" id="mgDesc">กดปุ่มให้ครบ!</div>
+    <div class="minigame-area">
+      <div class="click-target" id="clickTarget" onclick="mgClick()">💉</div>
+      <div class="click-progress"><div class="click-fill" id="clickFill" style="width:0%"></div></div>
+      <div class="click-label" id="clickLabel">0 / 0</div>
     </div>
-    <div class="sub-label">อุปกรณ์พร้อมแล้ว จัดการรักษาได้เลย!</div>
-    <div class="btn-hint" id="btn-s4">
-      กด <span class="key-icon">SPACE</span> เพื่อรักษา ✨
-    </div>
+    <div style="font-size:.85rem;color:#6b7280">กด <span style="background:#2e3035;padding:.1rem .4rem;border-radius:3px">SPACE</span> หรือคลิกที่วงกลม</div>
   </div>
 
   <div class="screen out" id="s5">
-    <div class="success-icon">✨</div>
-    <div class="big-label" style="color: #00ff9d;">รักษาสำเร็จ!</div>
-    <div style="font-size: 2.5rem; font-weight: 800; color: #fff; margin: 0.5rem 0;" id="earnedPts"></div>
-    <div class="sub-label" id="successDetail">กำลังเรียกผู้ป่วยรายต่อไป...</div>
+    <div style="font-size:4rem;margin-bottom:.3rem" id="resultIcon">✅</div>
+    <div class="big-label" id="resultTitle">รักษาสำเร็จ!</div>
+    <div class="pts-big" id="earnedPts">+50</div>
+    <div class="pts-breakdown" id="ptsBreakdown"></div>
+    <div class="result-grid">
+      <div class="result-item"><div class="result-num" id="rStreak">0</div><div class="result-lbl">Streak</div></div>
+      <div class="result-item"><div class="result-num" id="rMult">x1</div><div class="result-lbl">Multiplier</div></div>
+      <div class="result-item"><div class="result-num" id="rTotal">0</div><div class="result-lbl">Total Score</div></div>
+    </div>
+    <div class="sub-label" id="successDetail" style="margin-top:.5rem">กำลังเรียกผู้ป่วยรายต่อไป...</div>
   </div>
 
   <div class="screen out" id="goScreen">
-    <div style="font-size:4.5rem;margin-bottom:0.5rem">🏁</div>
-    <div class="big-label">หมดเวลาการทำงาน!</div>
-    <div style="font-size: 4.5rem; font-weight: 800; color: #00ff9d; margin: 0.5rem 0;" id="goScore">0</div>
-    <div class="sub-label">คะแนนรวมทั้งหมดของคุณ</div>
-    <div class="btn-hint" style="margin-top:1rem;" id="btn-go">
-      กด <span class="key-icon">SPACE</span> เพื่อเล่นใหม่
+    <div style="font-size:4rem;margin-bottom:.5rem">🏁</div>
+    <div class="big-label">หมดเวลา!</div>
+    <div style="font-size:4rem;font-weight:800;color:#10d97e" id="goScore">0</div>
+    <div style="color:#6b7280;font-size:.9rem;margin-bottom:.5rem">คะแนนรวม</div>
+    <div class="end-grid">
+      <div class="end-card"><div class="end-num" id="goPatients">0</div><div class="end-lbl">ผู้ป่วยที่รักษา</div></div>
+      <div class="end-card"><div class="end-num" id="goBestStreak">0</div><div class="end-lbl">Best Streak</div></div>
+      <div class="end-card"><div class="end-num" id="goAccuracy">0%</div><div class="end-lbl">Accuracy</div></div>
     </div>
+    <div class="btn-hint" style="margin-top:1rem" id="btn-go">กด <span class="key-icon">SPACE</span> เล่นใหม่</div>
   </div>
-
 </div>
 
 <script>
 let audioCtx;
-function initAudio() {
-  if (!audioCtx) {
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  }
-  if (audioCtx.state === 'suspended') audioCtx.resume();
-}
+function initAudio(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();if(audioCtx.state==='suspended')audioCtx.resume();}
+function beep(freq,type,dur,vol){if(!audioCtx)return;const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type=type;o.frequency.value=freq;g.gain.setValueAtTime(vol||0.3,audioCtx.currentTime);g.gain.exponentialRampToValueAtTime(0.01,audioCtx.currentTime+dur);o.connect(g);g.connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+dur);}
+function playShutter(){beep(800,'square',.1,.5);setTimeout(()=>beep(100,'square',.05,.3),80);}
+function playPrint(){for(let i=0;i<6;i++)setTimeout(()=>beep(150+i*20,'sawtooth',.1,.15),i*80);}
+function playTick(){beep(400,'triangle',.05,.1);}
+function playSuccess(){[523,659,784,1047].forEach((f,i)=>setTimeout(()=>beep(f,'sine',.25,.3),i*80));}
+function playError(){beep(200,'sawtooth',.3,.4);setTimeout(()=>beep(150,'sawtooth',.3,.3),150);}
+function playLevelUp(){[400,500,600,800,1000].forEach((f,i)=>setTimeout(()=>beep(f,'sine',.15,.2),i*60));}
+function playClick(){beep(600,'triangle',.08,.15);}
 
-function playShutterSound() {
-  if (!audioCtx) return;
-  const osc = audioCtx.createOscillator();
-  const gain = audioCtx.createGain();
-  osc.type = 'square';
-  osc.frequency.setValueAtTime(800, audioCtx.currentTime);
-  osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.1);
-  gain.gain.setValueAtTime(0.4, audioCtx.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
-  osc.connect(gain); gain.connect(audioCtx.destination);
-  osc.start(); osc.stop(audioCtx.currentTime + 0.1);
-}
-
-function playPrintSound() {
-  if (!audioCtx) return;
-  const osc = audioCtx.createOscillator();
-  const gain = audioCtx.createGain();
-  osc.type = 'sawtooth';
-  osc.frequency.setValueAtTime(150, audioCtx.currentTime);
-  osc.frequency.linearRampToValueAtTime(250, audioCtx.currentTime + 0.5);
-  gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.6);
-  osc.connect(gain); gain.connect(audioCtx.destination);
-  osc.start(); osc.stop(audioCtx.currentTime + 0.6);
-}
-
-function playTickSound() {
-  if (!audioCtx) return;
-  const osc = audioCtx.createOscillator();
-  const gain = audioCtx.createGain();
-  osc.type = 'triangle';
-  osc.frequency.setValueAtTime(400, audioCtx.currentTime);
-  gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.05);
-  osc.connect(gain); gain.connect(audioCtx.destination);
-  osc.start(); osc.stop(audioCtx.currentTime + 0.05);
-}
-
-function playSuccessSound() {
-  if (!audioCtx) return;
-  const frequencies = [523.25, 659.25, 783.99, 1046.50];
-  frequencies.forEach((freq, i) => {
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-    osc.type = 'sine';
-    osc.frequency.value = freq;
-    gain.gain.setValueAtTime(0, audioCtx.currentTime);
-    gain.gain.linearRampToValueAtTime(0.25, audioCtx.currentTime + i * 0.08 + 0.05);
-    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + i * 0.08 + 0.25);
-    osc.connect(gain); gain.connect(audioCtx.destination);
-    osc.start(audioCtx.currentTime + i * 0.08);
-    osc.stop(audioCtx.currentTime + i * 0.08 + 0.25);
-  });
-}
-
-const PATIENTS = [
-  { name:'Doge', emoji:'🐶', cardType:'ทั่วไป' },
-  { name:'Pop Cat', emoji:'🐱', cardType:'ฉุกเฉิน' },
-  { name:'Big Floppa',  emoji:'🐰', cardType:'ตรวจสุขภาพ' },
-  { name:'Hamster',emoji:'🐹', cardType:'ทั่วไป' },
-];
-const TREATMENTS = [
-  { icon:'💊', name:'ให้ยาลดไข้' },
-  { icon:'🩹', name:'พันแผล' },
-  { icon:'💉', name:'ฉีดยาวัคซีน' },
-  { icon:'💧', name:'ให้น้ำเกลือ' },
+const PATIENTS=[
+  {name:'Doge',emoji:'🐶',type:'สุนัข',rarity:'common'},
+  {name:'Pop Cat',emoji:'🐱',type:'แมว',rarity:'common'},
+  {name:'Big Floppa',emoji:'🐰',type:'กระต่าย',rarity:'common'},
+  {name:'Hamster Supreme',emoji:'🐹',type:'แฮมสเตอร์',rarity:'common'},
+  {name:'Ninja Fox',emoji:'🦊',type:'สุนัขจิ้งจอก',rarity:'rare'},
+  {name:'Hedgehog',emoji:'🦔',type:'เม่นขนเข็ม',rarity:'rare'},
+  {name:'Chaos Frog',emoji:'🐸',type:'กบ',rarity:'rare'},
+  {name:'Parrot Rex',emoji:'🦜',type:'นกแก้ว',rarity:'epic'},
+  {name:'Dragon Gecko',emoji:'🦎',type:'กิ้งก่า',rarity:'epic'},
+  {name:'Golden Axolotl',emoji:'🦋',type:'แอกโซลอเติล',rarity:'legendary'},
 ];
 
-let score = 0, timeLeft = 180; 
-let timerInt = null, procTimeout = null, countInt = null;
-let cur = null, curTreat = null;
-let isPlaying = false; 
+const CONDITIONS=[
+  {name:'ไข้สูง',hint:'ต้องการยาลดไข้',correct:'fever',sev:'🟡 ปานกลาง',sevClass:'diag-warn'},
+  {name:'แผลเปิด',hint:'ต้องพันแผลทันที',correct:'bandage',sev:'🔴 ฉุกเฉิน',sevClass:'diag-crit'},
+  {name:'ขาดน้ำ',hint:'ต้องการน้ำเกลือ IV',correct:'saline',sev:'🔴 ฉุกเฉิน',sevClass:'diag-crit'},
+  {name:'ถึงเวลาฉีดวัคซีน',hint:'ฉีดวัคซีนป้องกันโรค',correct:'vaccine',sev:'🟢 ทั่วไป',sevClass:'diag-ok'},
+  {name:'ติดเชื้อแบคทีเรีย',hint:'ต้องการยาปฏิชีวนะ',correct:'antibiotic',sev:'🟡 ปานกลาง',sevClass:'diag-warn'},
+  {name:'ปวดกล้ามเนื้อ',hint:'ต้องการยาแก้ปวด',correct:'painkiller',sev:'🟢 ทั่วไป',sevClass:'diag-ok'},
+  {name:'อาเจียน/ท้องเสีย',hint:'ต้องการยาบรรเทาอาการ',correct:'antidiarrheal',sev:'🟡 ปานกลาง',sevClass:'diag-warn'},
+  {name:'หอบหืด',hint:'ต้องการยาพ่น inhaler',correct:'inhaler',sev:'🔴 ฉุกเฉิน',sevClass:'diag-crit'},
+];
 
-function rnd(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+const TREATMENTS=[
+  {id:'fever',icon:'🌡️',name:'ยาลดไข้',key:'1'},
+  {id:'bandage',icon:'🩹',name:'พันแผล',key:'2'},
+  {id:'saline',icon:'💧',name:'น้ำเกลือ IV',key:'3'},
+  {id:'vaccine',icon:'💉',name:'ฉีดวัคซีน',key:'4'},
+  {id:'antibiotic',icon:'💊',name:'ยาปฏิชีวนะ',key:'1'},
+  {id:'painkiller',icon:'🔵',name:'ยาแก้ปวด',key:'2'},
+  {id:'antidiarrheal',icon:'🍵',name:'ยาแก้ท้องเสีย',key:'3'},
+  {id:'inhaler',icon:'💨',name:'ยาพ่น',key:'4'},
+];
 
-let activeScreen = 'titleScreen';
+const MINI_GAMES=[
+  {icon:'💉',name:'ฉีดยา',clicks:8},
+  {icon:'🩹',name:'พันแผล',clicks:10},
+  {icon:'💊',name:'บดยา',clicks:6},
+  {icon:'🫀',name:'CPR',clicks:12},
+  {icon:'🔬',name:'ตรวจตัวอย่าง',clicks:5},
+];
+
+const RARITY_LABELS={common:'COMMON',rare:'RARE',epic:'EPIC',legendary:'LEGENDARY'};
+const RARITY_CLASSES={common:'rarity-common',rare:'rarity-rare',epic:'rarity-epic',legendary:'rarity-legendary'};
+const RARITY_BONUS={common:1,rare:1.5,epic:2,legendary:3};
+const RARITY_PTS={common:50,rare:80,epic:120,legendary:200};
+
+let score=0,timeLeft=180,timerInt=null,procTimeout=null,countInt=null;
+let isPlaying=false,cur=null,curCond=null,curMG=null;
+let streak=0,bestStreak=0,multiplier=1,totalPatients=0,correctAnswers=0,wrongAnswers=0;
+let mgClickCount=0,mgClickGoal=0;
+let activeScreen='titleScreen';
+
+function rnd(arr){return arr[Math.floor(Math.random()*arr.length)];}
 function goTo(id){
   document.getElementById(activeScreen).classList.add('out');
   document.getElementById(id).classList.remove('out');
-  activeScreen = id;
+  activeScreen=id;
+}
+function pressBtn(id){const b=document.getElementById(id);if(b){b.classList.add('active');setTimeout(()=>b.classList.remove('active'),150);}}
+function showNotif(msg,type,dur){
+  const n=document.getElementById('notif');
+  n.textContent=msg;n.className='notif show '+(type||'success-n');
+  clearTimeout(n._t);n._t=setTimeout(()=>n.classList.remove('show'),dur||1800);
+}
+function showCombo(txt){
+  const c=document.getElementById('comboPop');
+  c.textContent=txt;c.className='combo-popup show';
+  setTimeout(()=>c.className='combo-popup',800);
 }
 
-function pressButton(btnId) {
-  const btn = document.getElementById(btnId);
-  if(btn) {
-    btn.classList.add('active');
-    setTimeout(() => btn.classList.remove('active'), 150);
+document.addEventListener('keydown',function(e){
+  if(['1','2','3','4'].includes(e.key)&&activeScreen==='s4'){
+    initAudio();selectTreat(parseInt(e.key)-1);return;
   }
-}
-
-document.addEventListener('keydown', function(event) {
-  if (event.code === 'Space' || event.key === ' ') {
-    event.preventDefault();
-    initAudio(); 
-    
-    if (activeScreen === 'titleScreen') {
-      pressButton('btn-start');
-      setTimeout(startGame, 100);
-    } else if (activeScreen === 'goScreen') {
-      pressButton('btn-go');
-      setTimeout(startGame, 100);
-    } else if (activeScreen === 's1') {
-      pressButton('btn-s1');
-      doShutter();
-    } else if (activeScreen === 's2') {
-      pressButton('btn-s2');
-      doPrint();
-    } else if (activeScreen === 's4') {
-      pressButton('btn-s4');
-      doTreat();
-    }
+  if(e.code==='Space'||e.key===' '){
+    e.preventDefault();initAudio();
+    if(activeScreen==='titleScreen'){pressBtn('btn-start');setTimeout(startGame,100);}
+    else if(activeScreen==='goScreen'){pressBtn('btn-go');setTimeout(startGame,100);}
+    else if(activeScreen==='s1'){pressBtn('btn-s1');doShutter();}
+    else if(activeScreen==='s2'){pressBtn('btn-s2');doPrint();}
+    else if(activeScreen==='s4b'){mgClick();}
   }
 });
 
 function startGame(){
-  score = 0; timeLeft = 180; 
-  isPlaying = true;
-  document.getElementById('topbar').style.display = 'flex';
-  updateScore();
-  if(timerInt) clearInterval(timerInt);
-  timerInt = setInterval(tick, 1000);
-  nextPatient();
+  score=0;timeLeft=180;streak=0;bestStreak=0;multiplier=1;
+  totalPatients=0;correctAnswers=0;wrongAnswers=0;isPlaying=true;
+  document.getElementById('topbar').style.display='flex';
+  updateHUD();if(timerInt)clearInterval(timerInt);
+  timerInt=setInterval(tick,1000);nextPatient();
 }
 
 function tick(){
-  if(!isPlaying) return;
+  if(!isPlaying)return;
   timeLeft--;
-  const td = document.getElementById('timerDisp');
-  td.textContent = timeLeft + 's';
-  td.className = 'timer' + (timeLeft <= 15 ? ' urgent' : '');
-  if(timeLeft <= 0) endGame();
+  const td=document.getElementById('timerDisp');
+  td.textContent=timeLeft+'s';
+  const pct=timeLeft/180*100;
+  document.getElementById('hpBar').style.width=pct+'%';
+  document.getElementById('hpBar').style.background=pct>50?'#10d97e':pct>25?'#f59e0b':'#ef4444';
+  td.className='timer '+(timeLeft<=15?'urgent':timeLeft<=30?'warn':'ok');
+  if(timeLeft<=15){const rf=document.getElementById('redFlash');rf.classList.add('on');setTimeout(()=>rf.classList.remove('on'),400);}
+  if(timeLeft<=0)endGame();
+}
+
+function updateHUD(){
+  document.getElementById('scoreDisp').textContent=score.toLocaleString();
+  document.getElementById('multDisp').textContent='x'+multiplier;
+  document.getElementById('streakDisp').textContent=streak>1?'🔥 '+streak:'';
 }
 
 function endGame(){
-  isPlaying = false;
-  clearInterval(timerInt);
-  if(procTimeout) clearTimeout(procTimeout);
-  if(countInt) clearInterval(countInt);
-  document.getElementById('topbar').style.display = 'none';
-  document.getElementById('goScore').textContent = score;
+  isPlaying=false;clearInterval(timerInt);
+  if(procTimeout)clearTimeout(procTimeout);if(countInt)clearInterval(countInt);
+  document.getElementById('topbar').style.display='none';
+  document.getElementById('goScore').textContent=score.toLocaleString();
+  document.getElementById('goPatients').textContent=totalPatients;
+  document.getElementById('goBestStreak').textContent=bestStreak;
+  const acc=totalPatients>0?Math.round(correctAnswers/totalPatients*100):0;
+  document.getElementById('goAccuracy').textContent=acc+'%';
   goTo('goScreen');
 }
 
-function updateScore(){
-  document.getElementById('scoreDisp').textContent = 'Score: ' + score;
-}
-
 function nextPatient(){
-  if(!isPlaying) return;
-  cur = rnd(PATIENTS);
-  document.getElementById('p1emoji').textContent = cur.emoji;
-  document.getElementById('p1name').textContent = cur.name;
-  document.getElementById('p1tag').textContent = cur.cardType;
+  if(!isPlaying)return;
+  const roll=Math.random();
+  let pool;
+  if(roll<.5)pool=PATIENTS.filter(p=>p.rarity==='common');
+  else if(roll<.75)pool=PATIENTS.filter(p=>p.rarity==='rare');
+  else if(roll<.92)pool=PATIENTS.filter(p=>p.rarity==='epic');
+  else pool=PATIENTS.filter(p=>p.rarity==='legendary');
+  cur=rnd(pool);
+  curCond=rnd(CONDITIONS);
+  document.getElementById('p1emoji').textContent=cur.emoji;
+  document.getElementById('p1name').textContent=cur.name;
+  document.getElementById('p1cond').textContent=curCond.name;
+  document.getElementById('p1tag').textContent=cur.type+' • '+curCond.sev;
+  const rb=document.getElementById('rarityBadge');
+  rb.textContent=RARITY_LABELS[cur.rarity];
+  rb.className='rarity-badge '+RARITY_CLASSES[cur.rarity];
+  const bonus=document.getElementById('p1bonus');
+  if(cur.rarity!=='common'){
+    bonus.textContent='💎 รางวัล x'+RARITY_BONUS[cur.rarity];
+    bonus.style.display='inline-block';
+  }else{bonus.style.display='none';}
+  const urgency=curCond.sevClass==='diag-crit'?'⚠️ ฉุกเฉิน! รีบรักษาด่วน':'บันทึกภาพเพื่อเก็บประวัติเข้าระบบ';
+  document.getElementById('urgencyHint').textContent=urgency;
   goTo('s1');
 }
 
 function doShutter(){
-  if(!isPlaying) return; 
-  playShutterSound();
-  const fl = document.getElementById('flashOverlay');
-  fl.classList.add('on');
-  setTimeout(()=> fl.classList.remove('on'), 100);
-  setTimeout(() => { goTo('s2'); }, 200);
+  if(!isPlaying)return;
+  playShutter();
+  const fl=document.getElementById('flashOv');
+  fl.classList.add('on');setTimeout(()=>fl.classList.remove('on'),80);
+  setTimeout(()=>goTo('s2'),180);
 }
 
 function doPrint(){
-  if(!isPlaying) return;
-  playPrintSound();
-  const pAnim = document.getElementById('printerAnim');
-  pAnim.classList.add('printing');
-  
-  setTimeout(() => {
-    pAnim.classList.remove('printing');
-    goToStep3();
-  }, 800);
+  if(!isPlaying)return;
+  playPrint();
+  const sl=document.getElementById('paperSlip');
+  sl.style.opacity='1';sl.style.bottom='-35px';
+  setTimeout(()=>{sl.style.opacity='0';sl.style.bottom='-15px';goToStep3();},900);
 }
 
 function goToStep3(){
-  if(!isPlaying) return;
+  if(!isPlaying)return;
   goTo('s3');
-  
-  const fill = document.getElementById('procFill');
-  const text = document.getElementById('procText');
-  
-  fill.style.transition = 'none';
-  fill.style.width = '0%';
-  text.textContent = 'Processing... 10s';
-
-  let tickCount = 0;
-  const soundTickInt = setInterval(() => {
-    if(activeScreen !== 's3') { clearInterval(soundTickInt); return; }
-    playTickSound();
-    tickCount++;
-    if(tickCount >= 10) clearInterval(soundTickInt);
-  }, 1000);
-
-  setTimeout(() => {
-    fill.style.transition = 'width 10s linear';
-    fill.style.width = '100%';
-  }, 50);
-
-  let sec = 10;
-  countInt = setInterval(() => {
-    if(!isPlaying) { clearInterval(countInt); return; }
-    sec--;
-    if(sec > 0) text.textContent = `Processing... ${sec}s`;
-    else {
-      text.textContent = 'Complete!';
-      clearInterval(countInt);
+  document.getElementById('diagBox').style.display='none';
+  const fill=document.getElementById('procFill'),text=document.getElementById('procText');
+  fill.style.transition='none';fill.style.width='0%';text.textContent='Processing...';
+  const dur=cur.rarity==='legendary'?12:cur.rarity==='epic'?10:cur.rarity==='rare'?8:7;
+  setTimeout(()=>{fill.style.transition=`width ${dur}s linear`;fill.style.width='100%';},50);
+  let sec=dur;
+  countInt=setInterval(()=>{
+    if(!isPlaying){clearInterval(countInt);return;}
+    playTick();sec--;
+    text.textContent=sec>0?`Processing... ${sec}s`:'Scanning...';
+    if(sec===Math.floor(dur/2)){
+      document.getElementById('diagBox').style.display='block';
+      document.getElementById('dName').textContent=cur.name+' ('+cur.type+')';
+      document.getElementById('dCond').textContent=curCond.name;
+      const sv=document.getElementById('dSev');sv.textContent=curCond.sev;sv.className='diag-value '+curCond.sevClass;
+      document.getElementById('dHint').textContent=curCond.hint;
     }
-  }, 1000);
-
-  procTimeout = setTimeout(() => {
-    if(isPlaying) goToStep4();
-  }, 10000);
+    if(sec<=0){clearInterval(countInt);text.textContent='วิเคราะห์เสร็จสิ้น ✓';}
+  },1000);
+  procTimeout=setTimeout(()=>{if(isPlaying)goToStep4();},dur*1000);
 }
 
 function goToStep4(){
-  if(!isPlaying) return;
-  curTreat = rnd(TREATMENTS);
-  document.getElementById('tIcon').textContent = curTreat.icon;
-  document.getElementById('tName').textContent = curTreat.name;
+  if(!isPlaying)return;
+  const correctT=TREATMENTS.find(t=>t.id===curCond.correct);
+  const wrongPool=TREATMENTS.filter(t=>t.id!==curCond.correct);
+  const wrongs=wrongPool.sort(()=>Math.random()-.5).slice(0,3);
+  const options=[correctT,...wrongs].sort(()=>Math.random()-.5);
+  const grid=document.getElementById('treatGrid');
+  grid.innerHTML='';
+  options.forEach((t,i)=>{
+    const div=document.createElement('div');
+    div.className='treat-item';
+    div.innerHTML=`<div class="treat-icon">${t.icon}</div><div class="treat-name">${t.name}</div><div class="treat-key">กด ${i+1}</div>`;
+    div.onclick=()=>selectTreat(i);
+    div._treatId=t.id;
+    grid.appendChild(div);
+  });
+  document.getElementById('treatHint').textContent='💡 '+curCond.hint;
   goTo('s4');
 }
 
-function doTreat(){
-  if(!isPlaying) return;
-  playSuccessSound();
-  
-  const pts = 50; 
-  score += pts;
-  updateScore();
+function selectTreat(idx){
+  if(!isPlaying||activeScreen!=='s4')return;
+  const grid=document.getElementById('treatGrid');
+  const items=grid.querySelectorAll('.treat-item');
+  if(idx>=items.length)return;
+  playClick();
+  const chosen=items[idx];
+  if(chosen._treatId===curCond.correct){
+    chosen.classList.add('selected');
+    totalPatients++;correctAnswers++;
+    setTimeout(()=>startMiniGame(),300);
+  }else{
+    chosen.classList.add('wrong');
+    playError();
+    streak=0;multiplier=1;wrongAnswers++;
+    updateHUD();
+    showNotif('❌ ผิด! ต้องใช้: '+TREATMENTS.find(t=>t.id===curCond.correct).name,'fail-n');
+    setTimeout(()=>{totalPatients++;penaltyAndNext();},1200);
+  }
+}
 
-  document.getElementById('earnedPts').textContent = '+' + pts + ' Points';
+function penaltyAndNext(){
+  if(!isPlaying)return;
+  score=Math.max(0,score-10);updateHUD();nextPatient();
+}
+
+function startMiniGame(){
+  if(!isPlaying)return;
+  curMG=rnd(MINI_GAMES);
+  mgClickCount=0;
+  const rareMult={common:1,rare:1.2,epic:1.5,legendary:2};
+  mgClickGoal=Math.round(curMG.clicks*rareMult[cur.rarity]);
+  document.getElementById('mgTitle').textContent=curMG.icon+' '+curMG.name;
+  document.getElementById('mgDesc').textContent='กด '+mgClickGoal+' ครั้ง';
+  document.getElementById('clickTarget').textContent=curMG.icon;
+  document.getElementById('clickFill').style.width='0%';
+  document.getElementById('clickLabel').textContent='0 / '+mgClickGoal;
+  goTo('s4b');
+}
+
+function mgClick(){
+  if(!isPlaying||activeScreen!=='s4b')return;
+  playClick();
+  mgClickCount++;
+  const pct=Math.min(100,mgClickCount/mgClickGoal*100);
+  document.getElementById('clickFill').style.width=pct+'%';
+  document.getElementById('clickLabel').textContent=mgClickCount+' / '+mgClickGoal;
+  const target=document.getElementById('clickTarget');
+  target.style.transform='scale(.85)';setTimeout(()=>target.style.transform='scale(1)',80);
+  if(mgClickCount>=mgClickGoal)doTreat();
+}
+
+function doTreat(){
+  if(!isPlaying)return;
+  playSuccess();
+  streak++;if(streak>bestStreak)bestStreak=streak;
+  multiplier=streak>=10?4:streak>=6?3:streak>=3?2:1;
+  if(streak===3)showCombo('🔥 3 COMBO!');
+  else if(streak===6)showCombo('⚡ 6 COMBO!');
+  else if(streak===10){showCombo('💥 10 COMBO!!');playLevelUp();}
+  const basePts=RARITY_PTS[cur.rarity];
+  const timePts=Math.round(timeLeft/180*20);
+  const total=Math.round((basePts+timePts)*multiplier);
+  score+=total;updateHUD();
+  document.getElementById('resultIcon').textContent=cur.emoji;
+  document.getElementById('resultTitle').textContent='รักษา '+cur.name+' สำเร็จ!';
+  document.getElementById('earnedPts').textContent='+'+total;
+  let breakdown=`Base: ${basePts} pts`;
+  if(timePts>0)breakdown+=` • Time bonus: +${timePts}`;
+  if(multiplier>1)breakdown+=` • <span class="pts-bonus">x${multiplier} Combo!</span>`;
+  if(cur.rarity!=='common')breakdown+=` • <span class="pts-bonus">💎 ${RARITY_LABELS[cur.rarity]}</span>`;
+  document.getElementById('ptsBreakdown').innerHTML=breakdown;
+  document.getElementById('rStreak').textContent=streak;
+  document.getElementById('rMult').textContent='x'+multiplier;
+  document.getElementById('rTotal').textContent=score.toLocaleString();
+  if(multiplier>1)showNotif('🔥 x'+multiplier+' Combo! +'+(total-basePts-timePts)+' bonus','bonus-n');
   goTo('s5');
-  
-  setTimeout(() => {
-    if(isPlaying) nextPatient();
-  }, 2000);
+  setTimeout(()=>{if(isPlaying)nextPatient();},2200);
 }
 </script>
 </body>
