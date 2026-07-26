@@ -215,7 +215,7 @@
 
   /* ---- photo stage ---- */
   .viewfinder{ width:170px; height:170px; position:relative; display:flex; align-items:center; justify-content:center; }
-  .vf-corner{ position:absolute; width:24px; height:24px; border-color:var(--cyan); border-style:solid; border-width:0; }
+  .vf-corner{ position:absolute; width:24px; height:24px; border-color:var(--cyan); border-style:solid; border-width:0; z-index:2; }
   .vf-tl{ top:0; left:0; border-top-width:3px; border-left-width:3px; }
   .vf-tr{ top:0; right:0; border-top-width:3px; border-right-width:3px; }
   .vf-bl{ bottom:0; left:0; border-bottom-width:3px; border-left-width:3px; }
@@ -543,32 +543,122 @@
     setTimeout(()=> goPhoto(), 900);
   }
 
-  /* ---------- STAGE 2: photo (flash + sound) ---------- */
+  /* ---------- STAGE 2: photo (real camera + flash + sound) ---------- */
   function goPhoto(){
     stage = 'PHOTO';
+    camState = 'idle';
     render(`
       <div class="prompt">&gt; SYSTEM: ยืนยันตัวตนด้วยภาพถ่าย</div>
       <div class="stage-title">ถ่ายรูปยืนยันตัวตน</div>
-      <div class="stage-sub">มองกล้อง แล้วกด SPACE เพื่อถ่ายภาพ</div>
-      <div class="viewfinder">
+      <div class="stage-sub">เปิดกล้อง มองเข้ากล้อง แล้วกด SPACE หรือปุ่มด้านล่างเพื่อถ่ายภาพ</div>
+      <div class="viewfinder" id="viewfinder">
         <div class="vf-corner vf-tl"></div><div class="vf-corner vf-tr"></div>
         <div class="vf-corner vf-bl"></div><div class="vf-corner vf-br"></div>
+        <video id="camVideo" autoplay playsinline muted style="display:none;"></video>
+        <img id="capturedImg" style="display:none;" alt="captured"/>
         <div class="vf-face" id="vfFace">🙂</div>
       </div>
+      <canvas id="camCanvas" style="display:none;"></canvas>
+      <button class="cam-btn" id="camBtn" type="button">📷 เปิดกล้อง</button>
+      <div class="cam-note" id="camNote">ต้องเปิดผ่าน https:// หรือ localhost กล้องถึงจะทำงาน — ถ้าเปิดไม่ได้ ระบบจะใช้ภาพจำลองแทน</div>
     `);
     acceptInput = true;
     setFooter('กด SPACE เพื่อถ่ายภาพ', true);
+    const camBtn = document.getElementById('camBtn');
+    camBtn.addEventListener('click', (e)=>{ e.stopPropagation(); handleCamBtn(); });
   }
+
+  function handleCamBtn(){
+    if(stage !== 'PHOTO') return;
+    if(camState === 'live'){ doPhoto(); return; }
+    requestCamera();
+  }
+
+  function requestCamera(){
+    if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+      camState = 'error';
+      updateCamUI();
+      return;
+    }
+    camState = 'starting';
+    updateCamUI();
+    navigator.mediaDevices.getUserMedia({ video:{ facingMode:'user' }, audio:false })
+      .then(stream=>{
+        if(stage !== 'PHOTO'){ stream.getTracks().forEach(t=>t.stop()); return; }
+        camStream = stream;
+        const video = document.getElementById('camVideo');
+        if(!video){ stream.getTracks().forEach(t=>t.stop()); return; }
+        video.srcObject = stream;
+        camState = 'live';
+        updateCamUI();
+      })
+      .catch(()=>{
+        camState = 'error';
+        updateCamUI();
+      });
+  }
+
+  function updateCamUI(){
+    const camBtn = document.getElementById('camBtn');
+    const video = document.getElementById('camVideo');
+    const face = document.getElementById('vfFace');
+    const note = document.getElementById('camNote');
+    if(!camBtn) return;
+    if(camState === 'idle'){
+      camBtn.textContent = '📷 เปิดกล้อง';
+      if(note) note.style.display = 'block';
+    } else if(camState === 'starting'){
+      camBtn.textContent = 'กำลังขอสิทธิ์กล้อง...';
+    } else if(camState === 'live'){
+      camBtn.textContent = '📸 ถ่ายภาพ (หรือกด SPACE)';
+      if(video) video.style.display = 'block';
+      if(face) face.style.display = 'none';
+      if(note) note.style.display = 'none';
+    } else if(camState === 'error'){
+      camBtn.textContent = '⚠ ไม่พบกล้อง — ลองอีกครั้ง';
+      if(note){ note.style.display = 'block'; note.textContent = 'เข้าถึงกล้องไม่ได้ (ต้องใช้ https:// หรือ localhost และอนุญาตสิทธิ์กล้อง) — กด SPACE เพื่อใช้ภาพจำลองแทนได้เลย'; }
+    }
+  }
+
+  function stopCamera(){
+    if(camStream){
+      camStream.getTracks().forEach(t=>t.stop());
+      camStream = null;
+    }
+  }
+
   function doPhoto(){
     if(!acceptInput || stage !== 'PHOTO') return;
     acceptInput = false;
     shutterSound();
     setFooter('ถ่ายภาพ...', false);
-    flashEl.classList.remove('pop'); void flashEl.offsetWidth;
-    flashEl.classList.add('pop');
-    const face = document.getElementById('vfFace');
-    if(face) face.textContent = '😊';
-    setTimeout(()=> goCard(), 500);
+    const flashEl2 = document.getElementById('flash');
+    flashEl2.classList.remove('pop'); void flashEl2.offsetWidth;
+    flashEl2.classList.add('pop');
+
+    if(camState === 'live'){
+      const video = document.getElementById('camVideo');
+      const canvas = document.getElementById('camCanvas');
+      const img = document.getElementById('capturedImg');
+      const camBtn = document.getElementById('camBtn');
+      try{
+        canvas.width = video.videoWidth || 320;
+        canvas.height = video.videoHeight || 320;
+        const ctx = canvas.getContext('2d');
+        ctx.translate(canvas.width, 0);
+        ctx.scale(-1, 1);
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        img.src = canvas.toDataURL('image/png');
+        img.style.display = 'block';
+        video.style.display = 'none';
+      }catch(e){ /* ignore, fall back visually */ }
+      if(camBtn) camBtn.style.display = 'none';
+      stopCamera();
+    } else {
+      const face = document.getElementById('vfFace');
+      if(face) face.textContent = '😊';
+    }
+    setTimeout(()=> goCard(), 600);
   }
 
   /* ---------- STAGE 3: issue card via 3-digit entry ---------- */
@@ -622,7 +712,35 @@
     acceptInput = false;
     keyClick();
     setFooter('กำลังออกบัตร...', false);
-    setTimeout(()=> goProcessing(), 400);
+    setTimeout(()=> goPrinting(), 400);
+  }
+
+  /* ---------- printing: card ejects from a slot before processing ---------- */
+  function goPrinting(){
+    stage = 'PRINTING';
+    const cardNo = cardDigits.join('');
+    render(`
+      <div class="prompt">&gt; SYSTEM: กำลังพิมพ์บัตรคิว</div>
+      <div class="stage-title">กำลังออกบัตร</div>
+      <div class="stage-sub">กรุณารอรับบัตรคิวจากเครื่องพิมพ์</div>
+      <div class="printer">
+        <div class="printer-slot"></div>
+        <div class="ticket" id="ticket">
+          <div class="ticket-label">QUEUE CARD</div>
+          <div class="ticket-no">${cardNo}</div>
+          <div class="ticket-sub">GREEN LEAF CLINIC</div>
+        </div>
+      </div>
+      <div class="stage-sub">PRINTING...</div>
+    `);
+    acceptInput = false;
+    setFooter('กำลังพิมพ์บัตร...', false);
+    setTimeout(()=>{
+      const ticket = document.getElementById('ticket');
+      if(ticket) ticket.classList.add('eject');
+      keyClick();
+    }, 200);
+    setTimeout(()=> goProcessing(), 1600);
   }
 
   /* ---------- processing: long white rectangle bar, 7s ---------- */
