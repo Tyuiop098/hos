@@ -10,7 +10,7 @@
 * { margin:0; padding:0; box-sizing:border-box; }
 body {
   font-family: 'Kanit', sans-serif;
-  background-color: #111214; /* สีพื้นหลังสไตล์ Roblox Dark Mode */
+  background-color: #111214; 
   color: #FFFFFF;
   height: 100vh;
   display: flex;
@@ -65,7 +65,7 @@ body {
 .timer.urgent { color: #f74b52; animation: pulse 0.5s infinite; }
 @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
 
-/* ── PATIENT CARD (ROBLOX INVENTORY STYLE) ── */
+/* ── PATIENT CARD ── */
 .patient-card {
   display: flex; align-items: center; justify-content: center; gap: 2rem;
   background: #393b3d;
@@ -93,23 +93,21 @@ body {
 }
 
 /* ── TYPOGRAPHY ── */
-.big-label {
-  font-size: 3rem; font-weight: 800; line-height: 1.2; margin-bottom: 0.5rem;
-}
-.sub-label {
-  font-size: 1.2rem; color: #b8b8b8; margin-bottom: 2rem;
-}
+.big-label { font-size: 3rem; font-weight: 800; line-height: 1.2; margin-bottom: 0.5rem; }
+.sub-label { font-size: 1.2rem; color: #b8b8b8; margin-bottom: 2rem; }
 
 /* ── ROBLOX BUTTON STYLE ── */
 .btn-hint {
-  background: #00b06f; /* สีเขียว Roblox */
+  background: #00b06f; 
   color: #ffffff;
   font-family: inherit; font-weight: 700; font-size: 1.2rem;
   border: none; border-radius: 8px;
   padding: 0.8rem 2rem;
   border-bottom: 4px solid #008f5a;
   display: inline-flex; align-items: center; gap: 0.5rem;
+  transition: transform 0.1s;
 }
+.btn-hint.active { transform: translateY(4px); border-bottom-width: 0px; margin-top: 4px; }
 .key-icon {
   background: #ffffff; color: #000;
   padding: 0.2rem 0.8rem; border-radius: 4px; font-weight: 900;
@@ -126,15 +124,10 @@ body {
 /* ── PROGRESS BAR ── */
 .progress-wrap { width: 100%; max-width: 600px; margin: 2rem auto; }
 .progress-track {
-  background: #111214;
-  border: 2px solid #393b3d;
-  border-radius: 8px; height: 40px;
+  background: #111214; border: 2px solid #393b3d; border-radius: 8px; height: 40px;
   overflow: hidden; position: relative;
 }
-.progress-fill {
-  height: 100%; width: 0%;
-  background: #00b06f;
-}
+.progress-fill { height: 100%; width: 0%; background: #00b06f; }
 .progress-text {
   position: absolute; inset: 0;
   display: flex; align-items: center; justify-content: center;
@@ -144,15 +137,20 @@ body {
 
 /* ── TREATMENT BOX ── */
 .treat-box {
-  background: #393b3d;
-  border: 2px solid #00b06f;
-  border-radius: 8px;
-  padding: 2rem 4rem;
-  display: inline-flex; flex-direction: column; align-items: center;
+  background: #393b3d; border: 2px solid #00b06f; border-radius: 8px;
+  padding: 2rem 4rem; display: inline-flex; flex-direction: column; align-items: center;
   margin-bottom: 2rem;
 }
 .treat-icon { font-size: 5rem; margin-bottom: 0.5rem; }
 .treat-name { font-size: 1.8rem; font-weight: 700; color: #00b06f; }
+
+/* ── ICON PRINTER ANIMATION ── */
+.printer-icon { font-size: 6rem; margin-bottom: 1rem; position: relative; }
+.paper-slip { 
+  position: absolute; bottom: -20px; left: 50%; transform: translateX(-50%);
+  font-size: 2rem; opacity: 0; transition: all 0.5s;
+}
+.printer-icon.printing .paper-slip { bottom: -40px; opacity: 1; }
 
 /* ── SUCCESS ── */
 .success-icon { font-size: 6rem; margin-bottom: 1rem; }
@@ -172,8 +170,8 @@ body {
   <div class="screen" id="titleScreen">
     <div style="font-size:6rem;margin-bottom:1rem">🏥</div>
     <div class="big-label">Vet Simulator (Roblox Edition)</div>
-    <div class="sub-label">กด Space Bar เพื่อเริ่มเกมและเล่นทั้งเกม!</div>
-    <div class="btn-hint">
+    <div class="sub-label">ลูปการเล่น: ถ่ายรูป ➔ ปริ้นบัตร ➔ ประมวลผล ➔ รักษา</div>
+    <div class="btn-hint" id="btn-start">
       กด <span class="key-icon">SPACE</span> เพื่อเริ่มเกม
     </div>
   </div>
@@ -186,15 +184,27 @@ body {
         <div class="patient-tag" id="p1tag"></div>
       </div>
     </div>
-    <div class="big-label">ประเมินอาการ</div>
+    <div class="big-label">STEP 1: ถ่ายรูป</div>
     <div class="sub-label">ถ่ายรูปเพื่อเก็บประวัติเข้าระบบ</div>
-    <div class="btn-hint">
+    <div class="btn-hint" id="btn-s1">
       กด <span class="key-icon">SPACE</span> เพื่อถ่ายรูป📸
     </div>
   </div>
 
   <div class="screen out" id="s2">
-    <div class="big-label">System Processing...</div>
+    <div class="printer-icon" id="printerAnim">
+      🖨️
+      <div class="paper-slip">📄</div>
+    </div>
+    <div class="big-label">STEP 2: ปริ้นบัตร</div>
+    <div class="sub-label">ออกบัตรคนไข้เพื่อเตรียมส่งเข้าห้องตรวจ</div>
+    <div class="btn-hint" id="btn-s2">
+      กด <span class="key-icon">SPACE</span> เพื่อปริ้นบัตร
+    </div>
+  </div>
+
+  <div class="screen out" id="s3">
+    <div class="big-label">STEP 3: Processing...</div>
     <div class="sub-label">กำลังประมวลผลอาการของสัตว์เลี้ยง</div>
     <div class="progress-wrap">
       <div class="progress-track">
@@ -204,23 +214,23 @@ body {
     </div>
   </div>
 
-  <div class="screen out" id="s3">
-    <div class="big-label">สิ่งที่ต้องรักษา!</div>
+  <div class="screen out" id="s4">
+    <div class="big-label">STEP 4: สิ่งที่ต้องรักษา!</div>
     <div class="treat-box">
       <div class="treat-icon" id="tIcon">💉</div>
       <div class="treat-name" id="tName">ฉีดยา</div>
     </div>
     <div class="sub-label">อุปกรณ์พร้อมแล้ว ทำการรักษาได้เลย!</div>
-    <div class="btn-hint">
+    <div class="btn-hint" id="btn-s4">
       กด <span class="key-icon">SPACE</span> เพื่อรักษา✨
     </div>
   </div>
 
-  <div class="screen out" id="s4">
+  <div class="screen out" id="s5">
     <div class="success-icon">✅</div>
     <div class="big-label">รักษาสำเร็จ!</div>
     <div style="font-size: 2.5rem; font-weight: 800; color: #00b06f; margin: 1rem 0;" id="earnedPts"></div>
-    <div class="sub-label" id="successDetail"></div>
+    <div class="sub-label" id="successDetail">กำลังเรียกผู้ป่วยรายต่อไป...</div>
   </div>
 
   <div class="screen out" id="goScreen">
@@ -228,7 +238,7 @@ body {
     <div class="big-label">หมดเวลา!</div>
     <div style="font-size: 5rem; font-weight: 800; color: #00b06f;" id="goScore">0</div>
     <div class="sub-label">คะแนนรวมของคุณ</div>
-    <div class="btn-hint" style="margin-top:2rem;">
+    <div class="btn-hint" style="margin-top:2rem;" id="btn-go">
       กด <span class="key-icon">SPACE</span> เพื่อเล่นใหม่
     </div>
   </div>
@@ -236,7 +246,7 @@ body {
 </div>
 
 <script>
-// ── AUDIO SYSTEM (สร้างเสียงสมจริงผ่านโค้ดโดยตรง) ──
+// ── AUDIO SYSTEM ──
 let audioCtx;
 function initAudio() {
   if (!audioCtx) {
@@ -245,7 +255,6 @@ function initAudio() {
   if (audioCtx.state === 'suspended') audioCtx.resume();
 }
 
-// เสียงชัตเตอร์กล้อง (มีเสียงแชะสั้นๆ)
 function playShutterSound() {
   if (!audioCtx) return;
   const osc = audioCtx.createOscillator();
@@ -259,7 +268,20 @@ function playShutterSound() {
   osc.start(); osc.stop(audioCtx.currentTime + 0.1);
 }
 
-// เสียงติ๊กๆ ระหว่างรอโหลด (เหมือนคอมพิวเตอร์กำลังประมวลผล)
+// เสียงเครื่องปริ้นบัตร (เสียงหึ่งๆ เหมือนกระดาษเลื่อน)
+function playPrintSound() {
+  if (!audioCtx) return;
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = 'sawtooth';
+  osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+  osc.frequency.linearRampToValueAtTime(250, audioCtx.currentTime + 0.5);
+  gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.6);
+  osc.connect(gain); gain.connect(audioCtx.destination);
+  osc.start(); osc.stop(audioCtx.currentTime + 0.6);
+}
+
 function playTickSound() {
   if (!audioCtx) return;
   const osc = audioCtx.createOscillator();
@@ -272,10 +294,9 @@ function playTickSound() {
   osc.start(); osc.stop(audioCtx.currentTime + 0.05);
 }
 
-// เสียงสำเร็จ (เหมือนเสียงเก็บเหรียญ/สำเร็จเควส)
 function playSuccessSound() {
   if (!audioCtx) return;
-  const frequencies = [523.25, 659.25, 783.99, 1046.50]; // คอร์ด C Major สดใส
+  const frequencies = [523.25, 659.25, 783.99, 1046.50];
   frequencies.forEach((freq, i) => {
     const osc = audioCtx.createOscillator();
     const gain = audioCtx.createGain();
@@ -297,7 +318,6 @@ const PATIENTS = [
   { name:'Big Floppa',  emoji:'🐰', cardType:'ตรวจสุขภาพ' },
   { name:'Hamster',emoji:'🐹', cardType:'ทั่วไป' },
 ];
-
 const TREATMENTS = [
   { icon:'💊', name:'ให้ยาลดไข้' },
   { icon:'🩹', name:'พันแผล' },
@@ -313,7 +333,6 @@ let isPlaying = false;
 
 function rnd(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
 
-// ── SCREEN CONTROL ──
 let activeScreen = 'titleScreen';
 function goTo(id){
   document.getElementById(activeScreen).classList.add('out');
@@ -321,17 +340,35 @@ function goTo(id){
   activeScreen = id;
 }
 
+// Visual button click effect
+function pressButton(btnId) {
+  const btn = document.getElementById(btnId);
+  if(btn) {
+    btn.classList.add('active');
+    setTimeout(() => btn.classList.remove('active'), 150);
+  }
+}
+
 // ── KEYBOARD CONTROLS (SPACEBAR) ──
 document.addEventListener('keydown', function(event) {
   if (event.code === 'Space' || event.key === ' ') {
-    event.preventDefault(); // ป้องกันหน้าเว็บเลื่อนลง
-    initAudio(); // เปิดใช้งานระบบเสียง
+    event.preventDefault();
+    initAudio(); 
     
-    if (activeScreen === 'titleScreen' || activeScreen === 'goScreen') {
-      startGame();
+    if (activeScreen === 'titleScreen') {
+      pressButton('btn-start');
+      setTimeout(startGame, 100);
+    } else if (activeScreen === 'goScreen') {
+      pressButton('btn-go');
+      setTimeout(startGame, 100);
     } else if (activeScreen === 's1') {
+      pressButton('btn-s1');
       doShutter();
-    } else if (activeScreen === 's3') {
+    } else if (activeScreen === 's2') {
+      pressButton('btn-s2');
+      doPrint();
+    } else if (activeScreen === 's4') {
+      pressButton('btn-s4');
       doTreat();
     }
   }
@@ -343,10 +380,8 @@ function startGame(){
   isPlaying = true;
   document.getElementById('topbar').style.display = 'flex';
   updateScore();
-  
   if(timerInt) clearInterval(timerInt);
   timerInt = setInterval(tick, 1000);
-  
   nextPatient();
 }
 
@@ -382,21 +417,34 @@ function nextPatient(){
   goTo('s1');
 }
 
-// ถ่ายรูป
+// STEP 1: ถ่ายรูป
 function doShutter(){
   if(!isPlaying) return; 
   playShutterSound();
-  
   const fl = document.getElementById('flashOverlay');
   fl.classList.add('on');
   setTimeout(()=> fl.classList.remove('on'), 100);
-  setTimeout(goToStep2, 200);
+  setTimeout(() => { goTo('s2'); }, 200);
 }
 
-// ประมวลผล 10 วินาที
-function goToStep2(){
+// STEP 2: ปริ้นบัตร
+function doPrint(){
   if(!isPlaying) return;
-  goTo('s2');
+  playPrintSound();
+  const pAnim = document.getElementById('printerAnim');
+  pAnim.classList.add('printing');
+  
+  // รอให้โชว์อนิเมชันปริ้นกระดาษนิดนึง แล้วข้ามไปหน้าประมวลผล
+  setTimeout(() => {
+    pAnim.classList.remove('printing');
+    goToStep3();
+  }, 800);
+}
+
+// STEP 3: ประมวลผล 10 วินาที
+function goToStep3(){
+  if(!isPlaying) return;
+  goTo('s3');
   
   const fill = document.getElementById('procFill');
   const text = document.getElementById('procText');
@@ -405,13 +453,12 @@ function goToStep2(){
   fill.style.width = '0%';
   text.textContent = 'Processing... 10s';
 
-  // เสียงติ๊กๆ ระหว่างรอ
   let tickCount = 0;
   const soundTickInt = setInterval(() => {
-    if(activeScreen !== 's2') { clearInterval(soundTickInt); return; }
+    if(activeScreen !== 's3') { clearInterval(soundTickInt); return; }
     playTickSound();
     tickCount++;
-    if(tickCount >= 10) clearInterval(soundTickInt); // หยุดติ๊กเมื่อครบ
+    if(tickCount >= 10) clearInterval(soundTickInt);
   }, 1000);
 
   setTimeout(() => {
@@ -431,20 +478,20 @@ function goToStep2(){
   }, 1000);
 
   procTimeout = setTimeout(() => {
-    if(isPlaying) goToStep3();
+    if(isPlaying) goToStep4();
   }, 10000);
 }
 
-// หน้าเตรียมรักษา
-function goToStep3(){
+// STEP 4: รอรักษา
+function goToStep4(){
   if(!isPlaying) return;
   curTreat = rnd(TREATMENTS);
   document.getElementById('tIcon').textContent = curTreat.icon;
   document.getElementById('tName').textContent = curTreat.name;
-  goTo('s3');
+  goTo('s4');
 }
 
-// ทำการรักษา
+// STEP 5: ทำการรักษา (สำเร็จ)
 function doTreat(){
   if(!isPlaying) return;
   playSuccessSound();
@@ -454,14 +501,12 @@ function doTreat(){
   updateScore();
 
   document.getElementById('earnedPts').textContent = '+' + pts + ' Points';
-  document.getElementById('successDetail').textContent = 
-    `ทำการ ${curTreat.name} ให้ ${cur.name} สำเร็จ!`;
-    
-  goTo('s4');
+  goTo('s5');
   
+  // พักหน้าสำเร็จแปบนึงแล้ววนลูป
   setTimeout(() => {
     if(isPlaying) nextPatient();
-  }, 2500);
+  }, 2000);
 }
 </script>
 </body>
