@@ -3,15 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>โรงพยาบาลสัตว์ (PC Edition)</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;600;700;900&display=swap" rel="stylesheet">
+<title>Roblox Vet Simulator</title>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
+/* ── ROBLOX UI STYLE ── */
 * { margin:0; padding:0; box-sizing:border-box; }
 body {
-  font-family: 'Noto Sans Thai', sans-serif;
-  background: #1400FF;
-  background: radial-gradient(circle at center, #2244FF, #0A0020);
-  color: #fff;
+  font-family: 'Kanit', sans-serif;
+  background-color: #111214; /* สีพื้นหลังสไตล์ Roblox Dark Mode */
+  color: #FFFFFF;
   height: 100vh;
   display: flex;
   align-items: center;
@@ -24,12 +24,12 @@ body {
 .game-container {
   width: 900px;
   height: 550px;
-  background: rgba(0, 0, 0, 0.4);
-  border: 4px solid rgba(255, 255, 255, 0.1);
-  border-radius: 24px;
+  background: #232527;
+  border: 2px solid #393b3d;
+  border-radius: 8px;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.8);
 }
 
 /* ── SCREEN WRAPPER ── */
@@ -39,14 +39,14 @@ body {
   display: flex; flex-direction: column;
   align-items: center; justify-content: center;
   padding: 2rem;
-  transition: opacity 0.3s, transform 0.3s;
+  transition: opacity 0.2s, transform 0.2s;
   text-align: center;
   opacity: 1;
   transform: scale(1);
 }
 .screen.out {
   opacity: 0;
-  transform: scale(0.95);
+  transform: scale(0.98);
   pointer-events: none;
 }
 
@@ -54,111 +54,108 @@ body {
 .topbar {
   position: absolute; top: 0; left: 0; right: 0;
   display: flex; justify-content: space-between; align-items: center;
-  padding: 1.5rem 2.5rem;
-  background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
+  padding: 1rem 1.5rem;
+  background: #111214;
+  border-bottom: 2px solid #393b3d;
   font-weight: 700; font-size: 1.2rem;
   z-index: 100;
 }
-.score { font-size: 1.8rem; font-weight: 900; color: #00D4AA; }
-.timer { font-size: 1.5rem; font-weight: 700; }
-.timer.urgent { color: #FF4466; animation: pulse 0.5s infinite; }
-@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+.score { color: #00b06f; font-size: 1.5rem; }
+.timer { font-size: 1.5rem; color: #ffffff; }
+.timer.urgent { color: #f74b52; animation: pulse 0.5s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
 
-/* ── PATIENT CARD (HORIZONTAL) ── */
+/* ── PATIENT CARD (ROBLOX INVENTORY STYLE) ── */
 .patient-card {
   display: flex; align-items: center; justify-content: center; gap: 2rem;
-  background: rgba(255,255,255,0.1);
-  border: 2px solid rgba(255,255,255,0.25);
-  border-radius: 20px;
+  background: #393b3d;
+  border: 2px solid #4a4d50;
+  border-radius: 8px;
   padding: 1.5rem 3rem;
   margin-bottom: 2rem;
-  min-width: 400px;
+  min-width: 450px;
+  box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
 }
-.patient-emoji { font-size: 5rem; }
+.patient-emoji { 
+  font-size: 6rem; 
+  background: #232527; 
+  border-radius: 8px; 
+  padding: 1rem;
+  border: 1px solid #111214;
+}
 .patient-info { text-align: left; }
-.patient-name  { font-size: 2rem; font-weight: 900; }
+.patient-name  { font-size: 2.5rem; font-weight: 800; }
 .patient-tag   {
   display: inline-block; margin-top: 0.5rem;
-  background: rgba(255,255,255,0.2);
-  padding: 0.3rem 1rem; border-radius: 999px;
-  font-size: 1rem; font-weight: 700;
+  background: #111214;
+  padding: 0.3rem 1rem; border-radius: 4px;
+  font-size: 1rem; font-weight: 600; color: #b8b8b8;
 }
 
 /* ── TYPOGRAPHY ── */
 .big-label {
-  font-size: 3rem; font-weight: 900; line-height: 1.2; margin-bottom: 0.5rem; text-shadow: 0 4px 10px rgba(0,0,0,0.5);
+  font-size: 3rem; font-weight: 800; line-height: 1.2; margin-bottom: 0.5rem;
 }
 .sub-label {
-  font-size: 1.2rem; opacity: 0.8; margin-bottom: 2rem;
+  font-size: 1.2rem; color: #b8b8b8; margin-bottom: 2rem;
 }
 
-/* ── BUTTONS ── */
-.action-btn {
-  background: #fff; color: #1400FF;
-  font-family: inherit; font-weight: 900; font-size: 1.5rem;
-  border: none; border-radius: 16px;
-  padding: 1rem 3rem; cursor: pointer;
-  transition: transform 0.1s, box-shadow 0.1s;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.3);
-  display: flex; align-items: center; gap: 1rem;
+/* ── ROBLOX BUTTON STYLE ── */
+.btn-hint {
+  background: #00b06f; /* สีเขียว Roblox */
+  color: #ffffff;
+  font-family: inherit; font-weight: 700; font-size: 1.2rem;
+  border: none; border-radius: 8px;
+  padding: 0.8rem 2rem;
+  border-bottom: 4px solid #008f5a;
+  display: inline-flex; align-items: center; gap: 0.5rem;
 }
-.action-btn:hover { transform: translateY(-4px); box-shadow: 0 10px 30px rgba(0,0,0,0.4); }
-.action-btn:active { transform: scale(0.95); }
+.key-icon {
+  background: #ffffff; color: #000;
+  padding: 0.2rem 0.8rem; border-radius: 4px; font-weight: 900;
+  border-bottom: 3px solid #cccccc;
+}
 
 /* ── CAMERA FLASH ── */
 .flash-overlay {
-  position: absolute; inset: 0; background: #fff;
+  position: absolute; inset: 0; background: #ffffff;
   opacity: 0; pointer-events: none; z-index: 999; transition: opacity 0.1s;
 }
 .flash-overlay.on { opacity: 1; }
 
-/* ── LONG PROGRESS BAR (10s) ── */
-.progress-wrap { width: 100%; max-width: 700px; margin: 2rem auto; }
+/* ── PROGRESS BAR ── */
+.progress-wrap { width: 100%; max-width: 600px; margin: 2rem auto; }
 .progress-track {
-  background: rgba(0,0,0,0.5);
-  border: 4px solid #fff;
-  border-radius: 20px; height: 60px;
+  background: #111214;
+  border: 2px solid #393b3d;
+  border-radius: 8px; height: 40px;
   overflow: hidden; position: relative;
 }
 .progress-fill {
   height: 100%; width: 0%;
-  background: linear-gradient(90deg, #00D4AA, #00FF88);
-  border-radius: 12px;
-  /* เราจะควบคุม Transition 10 วินาที ผ่าน JavaScript */
+  background: #00b06f;
 }
 .progress-text {
   position: absolute; inset: 0;
   display: flex; align-items: center; justify-content: center;
-  font-size: 1.5rem; font-weight: 900; color: #fff;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+  font-size: 1.2rem; font-weight: 700; color: #ffffff;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
 }
 
 /* ── TREATMENT BOX ── */
 .treat-box {
-  background: rgba(0, 212, 170, 0.2);
-  border: 3px solid #00D4AA;
-  border-radius: 20px;
+  background: #393b3d;
+  border: 2px solid #00b06f;
+  border-radius: 8px;
   padding: 2rem 4rem;
   display: inline-flex; flex-direction: column; align-items: center;
   margin-bottom: 2rem;
-  animation: pulseBox 1.5s infinite;
-}
-@keyframes pulseBox {
-  0%,100% { transform: scale(1); box-shadow: 0 0 0 rgba(0,212,170,0); }
-  50% { transform: scale(1.05); box-shadow: 0 0 30px rgba(0,212,170,0.5); }
 }
 .treat-icon { font-size: 5rem; margin-bottom: 0.5rem; }
-.treat-name { font-size: 1.8rem; font-weight: 900; color: #00D4AA; }
-.keyboard-hint {
-  display: inline-block; background: #fff; color: #000;
-  padding: 0.5rem 1.5rem; border-radius: 8px; font-weight: 900; font-size: 1.2rem;
-  box-shadow: inset 0 -4px 0 rgba(0,0,0,0.2);
-}
+.treat-name { font-size: 1.8rem; font-weight: 700; color: #00b06f; }
 
 /* ── SUCCESS ── */
-.success-icon { font-size: 6rem; margin-bottom: 1rem; animation: popIn 0.4s cubic-bezier(0.34,1.56,0.64,1); }
-@keyframes popIn { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-
+.success-icon { font-size: 6rem; margin-bottom: 1rem; }
 </style>
 </head>
 <body>
@@ -167,18 +164,18 @@ body {
   <div class="flash-overlay" id="flashOverlay"></div>
 
   <div class="topbar" id="topbar" style="display:none">
-    <div>🏥 โรงพยาบาลสัตว์</div>
-    <div class="score" id="scoreDisp">0 แต้ม</div>
-    <div class="timer" id="timerDisp">⏱ 180</div> 
+    <div>🏥 Vet Simulator</div>
+    <div class="score" id="scoreDisp">Score: 0</div>
+    <div class="timer" id="timerDisp">180s</div> 
   </div>
 
   <div class="screen" id="titleScreen">
     <div style="font-size:6rem;margin-bottom:1rem">🏥</div>
-    <div class="big-label">โรงพยาบาลสัตว์</div>
-    <div class="sub-label">ถ่ายรูป ➔ รอประมวลผล 10 วิ ➔ กด Space Bar เพื่อรักษา</div>
-    <button class="action-btn" style="background:#00D4AA;color:#0A0020;margin-top:2rem;" onclick="startGame()">
-      ▶ เริ่มเกม
-    </button>
+    <div class="big-label">Vet Simulator (Roblox Edition)</div>
+    <div class="sub-label">กด Space Bar เพื่อเริ่มเกมและเล่นทั้งเกม!</div>
+    <div class="btn-hint">
+      กด <span class="key-icon">SPACE</span> เพื่อเริ่มเกม
+    </div>
   </div>
 
   <div class="screen out" id="s1">
@@ -189,16 +186,16 @@ body {
         <div class="patient-tag" id="p1tag"></div>
       </div>
     </div>
-    <div class="big-label">เช็คอินผู้ป่วย</div>
-    <div class="sub-label">กดปุ่มเพื่อถ่ายรูปเก็บประวัติ</div>
-    <button class="action-btn" onclick="doShutter()">
-      📸 ถ่ายรูป
-    </button>
+    <div class="big-label">ประเมินอาการ</div>
+    <div class="sub-label">ถ่ายรูปเพื่อเก็บประวัติเข้าระบบ</div>
+    <div class="btn-hint">
+      กด <span class="key-icon">SPACE</span> เพื่อถ่ายรูป📸
+    </div>
   </div>
 
   <div class="screen out" id="s2">
-    <div class="big-label">กำลังประมวลผล...</div>
-    <div class="sub-label" id="procDesc">วิเคราะห์อาการของน้องสัตว์</div>
+    <div class="big-label">System Processing...</div>
+    <div class="sub-label">กำลังประมวลผลอาการของสัตว์เลี้ยง</div>
     <div class="progress-wrap">
       <div class="progress-track">
         <div class="progress-fill" id="procFill"></div>
@@ -209,45 +206,96 @@ body {
 
   <div class="screen out" id="s3">
     <div class="big-label">สิ่งที่ต้องรักษา!</div>
-    
     <div class="treat-box">
       <div class="treat-icon" id="tIcon">💉</div>
       <div class="treat-name" id="tName">ฉีดยา</div>
     </div>
-
-    <div class="sub-label">
-      กดปุ่ม <span class="keyboard-hint">Space Bar</span> รัวๆ / หรือกด 1 ครั้งเพื่อรักษา
+    <div class="sub-label">อุปกรณ์พร้อมแล้ว ทำการรักษาได้เลย!</div>
+    <div class="btn-hint">
+      กด <span class="key-icon">SPACE</span> เพื่อรักษา✨
     </div>
   </div>
 
   <div class="screen out" id="s4">
     <div class="success-icon">✅</div>
     <div class="big-label">รักษาสำเร็จ!</div>
-    <div style="font-size: 2rem; font-weight: 900; color: #00D4AA; margin: 1rem 0;" id="earnedPts"></div>
+    <div style="font-size: 2.5rem; font-weight: 800; color: #00b06f; margin: 1rem 0;" id="earnedPts"></div>
     <div class="sub-label" id="successDetail"></div>
   </div>
 
   <div class="screen out" id="goScreen">
     <div style="font-size:5rem;margin-bottom:0.5rem">🏁</div>
     <div class="big-label">หมดเวลา!</div>
-    <div style="font-size: 6rem; font-weight: 900; color: #00D4AA;" id="goScore">0</div>
-    <div class="sub-label">แต้มทั้งหมด</div>
-    <button class="action-btn" style="background:#00D4AA;color:#0A0020;margin-top:2rem;" onclick="startGame()">
-      🔄 เล่นใหม่
-    </button>
+    <div style="font-size: 5rem; font-weight: 800; color: #00b06f;" id="goScore">0</div>
+    <div class="sub-label">คะแนนรวมของคุณ</div>
+    <div class="btn-hint" style="margin-top:2rem;">
+      กด <span class="key-icon">SPACE</span> เพื่อเล่นใหม่
+    </div>
   </div>
 
 </div>
 
 <script>
+// ── AUDIO SYSTEM (สร้างเสียงสมจริงผ่านโค้ดโดยตรง) ──
+let audioCtx;
+function initAudio() {
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+}
+
+// เสียงชัตเตอร์กล้อง (มีเสียงแชะสั้นๆ)
+function playShutterSound() {
+  if (!audioCtx) return;
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = 'square';
+  osc.frequency.setValueAtTime(800, audioCtx.currentTime);
+  osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.1);
+  gain.gain.setValueAtTime(0.5, audioCtx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+  osc.connect(gain); gain.connect(audioCtx.destination);
+  osc.start(); osc.stop(audioCtx.currentTime + 0.1);
+}
+
+// เสียงติ๊กๆ ระหว่างรอโหลด (เหมือนคอมพิวเตอร์กำลังประมวลผล)
+function playTickSound() {
+  if (!audioCtx) return;
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = 'triangle';
+  osc.frequency.setValueAtTime(400, audioCtx.currentTime);
+  gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.05);
+  osc.connect(gain); gain.connect(audioCtx.destination);
+  osc.start(); osc.stop(audioCtx.currentTime + 0.05);
+}
+
+// เสียงสำเร็จ (เหมือนเสียงเก็บเหรียญ/สำเร็จเควส)
+function playSuccessSound() {
+  if (!audioCtx) return;
+  const frequencies = [523.25, 659.25, 783.99, 1046.50]; // คอร์ด C Major สดใส
+  frequencies.forEach((freq, i) => {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'sine';
+    osc.frequency.value = freq;
+    gain.gain.setValueAtTime(0, audioCtx.currentTime);
+    gain.gain.linearRampToValueAtTime(0.3, audioCtx.currentTime + i * 0.1 + 0.05);
+    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + i * 0.1 + 0.3);
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.start(audioCtx.currentTime + i * 0.1);
+    osc.stop(audioCtx.currentTime + i * 0.1 + 0.3);
+  });
+}
+
 // ── DATA ──
 const PATIENTS = [
-  { name:'น้องบาลู', emoji:'🐶', cardType:'ทั่วไป' },
-  { name:'น้องมิ้ว', emoji:'🐱', cardType:'ฉุกเฉิน' },
-  { name:'น้องบัน',  emoji:'🐰', cardType:'ตรวจสุขภาพ' },
-  { name:'น้องโกลด์',emoji:'🐹', cardType:'ทั่วไป' },
-  { name:'น้องแพนด้า',emoji:'🐼',cardType:'ฉุกเฉิน' },
-  { name:'น้องเต่า', emoji:'🐢', cardType:'ตรวจสุขภาพ' },
+  { name:'Doge', emoji:'🐶', cardType:'ทั่วไป' },
+  { name:'Pop Cat', emoji:'🐱', cardType:'ฉุกเฉิน' },
+  { name:'Big Floppa',  emoji:'🐰', cardType:'ตรวจสุขภาพ' },
+  { name:'Hamster',emoji:'🐹', cardType:'ทั่วไป' },
 ];
 
 const TREATMENTS = [
@@ -255,16 +303,13 @@ const TREATMENTS = [
   { icon:'🩹', name:'พันแผล' },
   { icon:'💉', name:'ฉีดยาวัคซีน' },
   { icon:'💧', name:'ให้น้ำเกลือ' },
-  { icon:'🔧', name:'ถอนฟันผุ' },
-  { icon:'🪤', name:'ใส่เฝือกกระดูก' },
 ];
 
 // ── STATE ──
-let score = 0, timeLeft = 180; // ปรับเวลาเป็น 180 วิ เพราะ 1 ตัวใช้เวลา 10 วิ+
-let timerInt = null, procTimeout = null;
+let score = 0, timeLeft = 180; 
+let timerInt = null, procTimeout = null, countInt = null;
 let cur = null, curTreat = null;
 let isPlaying = false; 
-let isWaitingForSpace = false; // ตัวแปรเช็คว่ารอให้กด Space Bar อยู่หรือไม่
 
 function rnd(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
 
@@ -276,11 +321,26 @@ function goTo(id){
   activeScreen = id;
 }
 
-// ── GAME START ──
+// ── KEYBOARD CONTROLS (SPACEBAR) ──
+document.addEventListener('keydown', function(event) {
+  if (event.code === 'Space' || event.key === ' ') {
+    event.preventDefault(); // ป้องกันหน้าเว็บเลื่อนลง
+    initAudio(); // เปิดใช้งานระบบเสียง
+    
+    if (activeScreen === 'titleScreen' || activeScreen === 'goScreen') {
+      startGame();
+    } else if (activeScreen === 's1') {
+      doShutter();
+    } else if (activeScreen === 's3') {
+      doTreat();
+    }
+  }
+});
+
+// ── GAME LOGIC ──
 function startGame(){
   score = 0; timeLeft = 180; 
   isPlaying = true;
-  isWaitingForSpace = false;
   document.getElementById('topbar').style.display = 'flex';
   updateScore();
   
@@ -294,48 +354,46 @@ function tick(){
   if(!isPlaying) return;
   timeLeft--;
   const td = document.getElementById('timerDisp');
-  td.textContent = '⏱ ' + timeLeft;
+  td.textContent = timeLeft + 's';
   td.className = 'timer' + (timeLeft <= 15 ? ' urgent' : '');
   if(timeLeft <= 0) endGame();
 }
 
 function endGame(){
   isPlaying = false;
-  isWaitingForSpace = false;
   clearInterval(timerInt);
   if(procTimeout) clearTimeout(procTimeout);
+  if(countInt) clearInterval(countInt);
   document.getElementById('topbar').style.display = 'none';
   document.getElementById('goScore').textContent = score;
   goTo('goScreen');
 }
 
 function updateScore(){
-  document.getElementById('scoreDisp').textContent = score + ' แต้ม';
+  document.getElementById('scoreDisp').textContent = 'Score: ' + score;
 }
 
-// ── NEXT PATIENT ──
 function nextPatient(){
   if(!isPlaying) return;
   cur = rnd(PATIENTS);
-  
-  // อัปเดตข้อมูลผู้ป่วยในหน้าจอเช็คอิน
   document.getElementById('p1emoji').textContent = cur.emoji;
   document.getElementById('p1name').textContent = cur.name;
   document.getElementById('p1tag').textContent = cur.cardType;
-  
   goTo('s1');
 }
 
-// ── STEP 1: ACTION (กดถ่ายรูป) ──
+// ถ่ายรูป
 function doShutter(){
   if(!isPlaying) return; 
+  playShutterSound();
+  
   const fl = document.getElementById('flashOverlay');
   fl.classList.add('on');
-  setTimeout(()=> fl.classList.remove('on'), 150);
-  setTimeout(goToStep2, 300);
+  setTimeout(()=> fl.classList.remove('on'), 100);
+  setTimeout(goToStep2, 200);
 }
 
-// ── STEP 2: PROCESSING (รอโหลด 10 วินาทีเป๊ะๆ) ──
+// ประมวลผล 10 วินาที
 function goToStep2(){
   if(!isPlaying) return;
   goTo('s2');
@@ -343,78 +401,67 @@ function goToStep2(){
   const fill = document.getElementById('procFill');
   const text = document.getElementById('procText');
   
-  // รีเซ็ตหลอดเป็น 0 ก่อน
   fill.style.transition = 'none';
   fill.style.width = '0%';
-  text.textContent = 'วิเคราะห์อาการ... 10s';
+  text.textContent = 'Processing... 10s';
 
-  // เริ่มอนิเมชั่น 10 วินาที
+  // เสียงติ๊กๆ ระหว่างรอ
+  let tickCount = 0;
+  const soundTickInt = setInterval(() => {
+    if(activeScreen !== 's2') { clearInterval(soundTickInt); return; }
+    playTickSound();
+    tickCount++;
+    if(tickCount >= 10) clearInterval(soundTickInt); // หยุดติ๊กเมื่อครบ
+  }, 1000);
+
   setTimeout(() => {
     fill.style.transition = 'width 10s linear';
     fill.style.width = '100%';
   }, 50);
 
-  // นับถอยหลังตัวเลขโชว์ให้ผู้เล่นเห็น (ไม่บังคับ แต่เพิ่มอรรถรส)
   let sec = 10;
-  const countInt = setInterval(() => {
+  countInt = setInterval(() => {
     if(!isPlaying) { clearInterval(countInt); return; }
     sec--;
-    if(sec > 0) text.textContent = `วิเคราะห์อาการ... ${sec}s`;
+    if(sec > 0) text.textContent = `Processing... ${sec}s`;
     else {
-      text.textContent = 'เสร็จสิ้น!';
+      text.textContent = 'Complete!';
       clearInterval(countInt);
     }
   }, 1000);
 
-  // เปลี่ยนหน้าเมื่อครบ 10 วินาที
   procTimeout = setTimeout(() => {
     if(isPlaying) goToStep3();
   }, 10000);
 }
 
-// ── STEP 3: SHOW TREATMENT & WAIT FOR SPACEBAR ──
+// หน้าเตรียมรักษา
 function goToStep3(){
   if(!isPlaying) return;
-  
-  // สุ่มวิธีการรักษา
   curTreat = rnd(TREATMENTS);
   document.getElementById('tIcon').textContent = curTreat.icon;
   document.getElementById('tName').textContent = curTreat.name;
-  
   goTo('s3');
-  
-  // เปิดระบบรับการกด Space Bar
-  isWaitingForSpace = true;
 }
 
-// ── KEYBOARD LISTENER (Space Bar) ──
-document.addEventListener('keydown', function(event) {
-  // ตรวจสอบว่ากำลังรอการกด Space Bar (รหัส 32 หรือโค้ด 'Space') ในหน้า 3 อยู่หรือไม่
-  if (isWaitingForSpace && (event.code === 'Space' || event.key === ' ')) {
-    event.preventDefault(); // ป้องกันหน้าจอเลื่อนลง
-    isWaitingForSpace = false; // ปิดการรับค่าซ้ำ
-    doTreat();
-  }
-});
-
-// ── STEP 4: SUCCESS ──
+// ทำการรักษา
 function doTreat(){
   if(!isPlaying) return;
+  playSuccessSound();
   
-  const pts = 50; // ให้แต้มเยอะหน่อยเพราะรอนาน
+  const pts = 50; 
   score += pts;
   updateScore();
 
-  document.getElementById('earnedPts').textContent = '+' + pts + ' แต้ม';
+  document.getElementById('earnedPts').textContent = '+' + pts + ' Points';
   document.getElementById('successDetail').textContent = 
-    `รักษา ${cur.name} ด้วยการ ${curTreat.name} เรียบร้อย!`;
+    `ทำการ ${curTreat.name} ให้ ${cur.name} สำเร็จ!`;
     
   goTo('s4');
   
-  // พักหน้าจอสำเร็จ 2 วินาที แล้วเรียกคนไข้ใหม่
   setTimeout(() => {
     if(isPlaying) nextPatient();
-  }, 2000);
+  }, 2500);
 }
 </script>
 </body>
