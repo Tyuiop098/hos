@@ -86,6 +86,23 @@ body{font-family:'Kanit',sans-serif;background:#0a0c0f;color:#fff;height:100vh;d
 .click-fill{height:100%;background:#10d97e;border-radius:5px;transition:width .1s}
 .click-label{font-size:.85rem;color:#6b7280;margin-top:.4rem}
 
+/* ---- Printer minigame (NEW) ---- */
+.printer-box{background:#111318;border:2px solid #2e3035;border-radius:10px;padding:1.5rem 2rem 2rem;margin-bottom:1.2rem;min-width:420px}
+.printer-machine{position:relative;width:220px;height:130px;margin:0 auto .6rem;background:#22262d;border:2px solid #33373f;border-radius:10px 10px 4px 4px;box-shadow:inset 0 -6px 12px rgba(0,0,0,.4)}
+.printer-slot{position:absolute;top:14px;left:20px;right:20px;height:10px;background:#0a0c0f;border-radius:3px;box-shadow:inset 0 2px 4px rgba(0,0,0,.8)}
+.printer-light{position:absolute;top:32px;right:20px;width:10px;height:10px;border-radius:50%;background:#10d97e;box-shadow:0 0 6px #10d97e}
+.printer-light.busy{background:#f59e0b;box-shadow:0 0 6px #f59e0b;animation:blinklight .3s infinite}
+@keyframes blinklight{0%,100%{opacity:1}50%{opacity:.3}}
+.printer-paper{position:absolute;top:14px;left:50%;transform:translateX(-50%);width:120px;height:0px;background:#f4f4f4;border:1px solid #d1d1d1;border-top:none;border-radius:0 0 3px 3px;overflow:hidden;transition:height .05s linear;box-shadow:0 2px 6px rgba(0,0,0,.3)}
+.printer-paper-lines{padding:8px 10px;font-size:.6rem;line-height:1.5;color:#9ca3af;text-align:left;white-space:nowrap}
+.printer-progress{margin-top:.8rem;height:14px;background:#2e3035;border-radius:7px;overflow:hidden;max-width:280px;margin-left:auto;margin-right:auto;position:relative}
+.printer-progress-fill{height:100%;background:linear-gradient(90deg,#0aad64,#10d97e);border-radius:7px;transition:width .08s linear}
+.printer-progress-label{font-size:.85rem;color:#6b7280;margin-top:.5rem}
+.printer-mash-btn{margin-top:1rem;background:#10d97e;color:#fff;font-family:inherit;font-weight:800;font-size:1.15rem;border:none;border-radius:10px;padding:.9rem 2.4rem;border-bottom:5px solid #0aad64;display:inline-flex;align-items:center;gap:.6rem;cursor:pointer;user-select:none}
+.printer-mash-btn.pressed{transform:translateY(5px);border-bottom-width:0;margin-top:calc(1rem + 5px)}
+.printer-decay-note{font-size:.75rem;color:#ef4444;margin-top:.5rem;opacity:0;transition:opacity .2s}
+.printer-decay-note.show{opacity:1}
+
 .pts-big{font-size:3.5rem;font-weight:800;color:#10d97e}
 .pts-breakdown{font-size:.9rem;color:#9ca3af;margin:.3rem 0}
 .pts-bonus{color:#f59e0b;font-weight:700}
@@ -136,14 +153,14 @@ body{font-family:'Kanit',sans-serif;background:#0a0c0f;color:#fff;height:100vh;d
     <div style="font-size:5rem;margin-bottom:.5rem">🏥</div>
     <div class="big-label" style="font-size:3rem">Vet Simulator</div>
     <div style="font-size:.85rem;color:#6b7280;margin:.5rem 0 .3rem">Roblox Edition • Enhanced</div>
-    <div style="color:#9ca3af;font-size:.9rem;margin-bottom:.8rem">ถ่ายรูป → ปริ้นบัตร → วิเคราะห์ → เลือกรักษา → มินิเกม</div>
+    <div style="color:#9ca3af;font-size:.9rem;margin-bottom:.8rem">ถ่ายรูป → ปริ้นบัตร (กด SPACE รัว!) → วิเคราะห์ → รักษา → มินิเกม (ทุกขั้นตอนกด SPACE เดียว)</div>
     <div style="display:flex;gap:.5rem;margin-bottom:1.5rem;flex-wrap:wrap;justify-content:center">
       <span style="background:#10d97e15;color:#10d97e;border:1px solid #10d97e33;padding:.2rem .7rem;border-radius:4px;font-size:.8rem;font-weight:700">🔥 Combo System</span>
       <span style="background:#7c3aed15;color:#c4b5fd;border:1px solid #7c3aed33;padding:.2rem .7rem;border-radius:4px;font-size:.8rem;font-weight:700">💎 4 Rarity Types</span>
       <span style="background:#f59e0b15;color:#f59e0b;border:1px solid #f59e0b33;padding:.2rem .7rem;border-radius:4px;font-size:.8rem;font-weight:700">⚡ Mini-games</span>
     </div>
     <div class="btn-hint" id="btn-start">กด <span class="key-icon">SPACE</span> เพื่อเริ่มเกม</div>
-    <div style="color:#374151;font-size:.75rem;margin-top:1rem">ใช้ปุ่มตัวเลข 1-4 เลือกการรักษา • SPACE ยืนยัน</div>
+    <div style="color:#374151;font-size:.75rem;margin-top:1rem">ใช้ปุ่ม SPACE ได้ทุกขั้นตอน • บางขั้นต้องกดรัว!</div>
   </div>
 
   <div class="screen out" id="s1">
@@ -165,14 +182,31 @@ body{font-family:'Kanit',sans-serif;background:#0a0c0f;color:#fff;height:100vh;d
     <div class="btn-hint" id="btn-s1">กด <span class="key-icon">SPACE</span> ถ่ายรูป 📸</div>
   </div>
 
+  <!-- STEP 2: Printer mash minigame -->
   <div class="screen out" id="s2">
-    <div style="font-size:5rem;margin-bottom:.5rem;position:relative" id="printerAnim">
-      🖨️<div class="paper-slip" id="paperSlip" style="position:absolute;bottom:-15px;left:50%;transform:translateX(-50%);font-size:1.8rem;opacity:0;transition:all .5s">📄</div>
-    </div>
     <div class="step-num">STEP 2 / 4</div>
-    <div class="big-label">ปริ้นบัตรผู้ป่วย</div>
-    <div class="sub-label">ออกบัตรเพื่อเตรียมส่งเข้าห้องตรวจ</div>
-    <div class="btn-hint" id="btn-s2">กด <span class="key-icon">SPACE</span> ปริ้นบัตร</div>
+    <div class="big-label" style="font-size:1.9rem">ปริ้นบัตรผู้ป่วย</div>
+    <div class="sub-label" style="margin-bottom:.8rem">กด <span class="key-icon" style="font-size:.75em">SPACE</span> รัว ๆ ให้กระดาษออกมาเต็มใบ!</div>
+    <div class="printer-box">
+      <div class="printer-machine">
+        <div class="printer-light" id="printerLight"></div>
+        <div class="printer-slot"></div>
+        <div class="printer-paper" id="printerPaper">
+          <div class="printer-paper-lines">
+            ▪ ชื่อผู้ป่วย: .........<br>
+            ▪ ชนิด: .........<br>
+            ▪ อาการ: .........<br>
+            ▪ วันที่: .........
+          </div>
+        </div>
+      </div>
+      <div class="printer-progress">
+        <div class="printer-progress-fill" id="printerFill" style="width:0%"></div>
+      </div>
+      <div class="printer-progress-label" id="printerLabel">0%</div>
+      <div class="printer-decay-note" id="printerDecayNote">⚠️ กระดาษกำลังติด! กดต่อไป!</div>
+    </div>
+    <div class="btn-hint" id="btn-s2" onclick="printerMash()">กด <span class="key-icon">SPACE</span> พิมพ์บัตร 🖨️</div>
   </div>
 
   <div class="screen out" id="s3">
@@ -195,10 +229,10 @@ body{font-family:'Kanit',sans-serif;background:#0a0c0f;color:#fff;height:100vh;d
 
   <div class="screen out" id="s4">
     <div class="step-num">STEP 4 / 4</div>
-    <div class="big-label" style="font-size:1.8rem;margin-bottom:.3rem">เลือกวิธีรักษาที่ถูกต้อง!</div>
+    <div class="big-label" style="font-size:1.8rem;margin-bottom:.3rem">เตรียมวิธีรักษา</div>
     <div class="treat-instruction" id="treatHint"></div>
-    <div class="treat-grid" id="treatGrid"></div>
-    <div style="font-size:.8rem;color:#374151">กด 1-4 หรือคลิกเพื่อเลือก</div>
+    <div class="treat-grid" id="treatGrid" style="grid-template-columns:1fr;max-width:260px;margin-left:auto;margin-right:auto"></div>
+    <div class="btn-hint" id="btn-s4">กด <span class="key-icon">SPACE</span> เริ่มรักษา ▶</div>
   </div>
 
   <div class="screen out" id="s4b">
@@ -245,7 +279,8 @@ let audioCtx;
 function initAudio(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();if(audioCtx.state==='suspended')audioCtx.resume();}
 function beep(freq,type,dur,vol){if(!audioCtx)return;const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type=type;o.frequency.value=freq;g.gain.setValueAtTime(vol||0.3,audioCtx.currentTime);g.gain.exponentialRampToValueAtTime(0.01,audioCtx.currentTime+dur);o.connect(g);g.connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+dur);}
 function playShutter(){beep(800,'square',.1,.5);setTimeout(()=>beep(100,'square',.05,.3),80);}
-function playPrint(){for(let i=0;i<6;i++)setTimeout(()=>beep(150+i*20,'sawtooth',.1,.15),i*80);}
+function playPrintTick(){beep(180+Math.random()*60,'sawtooth',.06,.15);}
+function playPrintDone(){[400,600,800].forEach((f,i)=>setTimeout(()=>beep(f,'sine',.15,.2),i*70));}
 function playTick(){beep(400,'triangle',.05,.1);}
 function playSuccess(){[523,659,784,1047].forEach((f,i)=>setTimeout(()=>beep(f,'sine',.25,.3),i*80));}
 function playError(){beep(200,'sawtooth',.3,.4);setTimeout(()=>beep(150,'sawtooth',.3,.3),150);}
@@ -306,6 +341,13 @@ let streak=0,bestStreak=0,multiplier=1,totalPatients=0,correctAnswers=0,wrongAns
 let mgClickCount=0,mgClickGoal=0;
 let activeScreen='titleScreen';
 
+// Printer minigame state
+let printerPct=0,printerDecayInt=null,printerDone=false;
+const PRINTER_MAX_HEIGHT=100; // px of paper that can show
+const PRINTER_FILL_PER_PRESS=7; // % per SPACE press
+const PRINTER_DECAY_PER_TICK=1.4; // % lost per decay tick if you stop mashing
+const PRINTER_DECAY_MS=150;
+
 function rnd(arr){return arr[Math.floor(Math.random()*arr.length)];}
 function goTo(id){
   document.getElementById(activeScreen).classList.add('out');
@@ -325,15 +367,13 @@ function showCombo(txt){
 }
 
 document.addEventListener('keydown',function(e){
-  if(['1','2','3','4'].includes(e.key)&&activeScreen==='s4'){
-    initAudio();selectTreat(parseInt(e.key)-1);return;
-  }
   if(e.code==='Space'||e.key===' '){
     e.preventDefault();initAudio();
     if(activeScreen==='titleScreen'){pressBtn('btn-start');setTimeout(startGame,100);}
     else if(activeScreen==='goScreen'){pressBtn('btn-go');setTimeout(startGame,100);}
     else if(activeScreen==='s1'){pressBtn('btn-s1');doShutter();}
-    else if(activeScreen==='s2'){pressBtn('btn-s2');doPrint();}
+    else if(activeScreen==='s2'){printerMash();}
+    else if(activeScreen==='s4'){pressBtn('btn-s4');confirmTreat();}
     else if(activeScreen==='s4b'){mgClick();}
   }
 });
@@ -368,6 +408,7 @@ function updateHUD(){
 function endGame(){
   isPlaying=false;clearInterval(timerInt);
   if(procTimeout)clearTimeout(procTimeout);if(countInt)clearInterval(countInt);
+  if(printerDecayInt)clearInterval(printerDecayInt);
   document.getElementById('topbar').style.display='none';
   document.getElementById('goScore').textContent=score.toLocaleString();
   document.getElementById('goPatients').textContent=totalPatients;
@@ -409,15 +450,52 @@ function doShutter(){
   playShutter();
   const fl=document.getElementById('flashOv');
   fl.classList.add('on');setTimeout(()=>fl.classList.remove('on'),80);
-  setTimeout(()=>goTo('s2'),180);
+  setTimeout(()=>goToStep2(),180);
 }
 
-function doPrint(){
+// ---------- STEP 2: Printer mash minigame ----------
+function goToStep2(){
   if(!isPlaying)return;
-  playPrint();
-  const sl=document.getElementById('paperSlip');
-  sl.style.opacity='1';sl.style.bottom='-35px';
-  setTimeout(()=>{sl.style.opacity='0';sl.style.bottom='-15px';goToStep3();},900);
+  printerPct=0;printerDone=false;
+  document.getElementById('printerFill').style.width='0%';
+  document.getElementById('printerLabel').textContent='0%';
+  document.getElementById('printerPaper').style.height='0px';
+  document.getElementById('printerLight').classList.remove('busy');
+  document.getElementById('printerDecayNote').classList.remove('show');
+  goTo('s2');
+  if(printerDecayInt)clearInterval(printerDecayInt);
+  printerDecayInt=setInterval(()=>{
+    if(!isPlaying||activeScreen!=='s2'||printerDone)return;
+    printerPct=Math.max(0,printerPct-PRINTER_DECAY_PER_TICK);
+    updatePrinterVisual();
+    document.getElementById('printerDecayNote').classList.toggle('show',printerPct>0&&printerPct<95);
+  },PRINTER_DECAY_MS);
+}
+
+function updatePrinterVisual(){
+  document.getElementById('printerFill').style.width=printerPct+'%';
+  document.getElementById('printerLabel').textContent=Math.round(printerPct)+'%';
+  document.getElementById('printerPaper').style.height=(printerPct/100*PRINTER_MAX_HEIGHT)+'px';
+}
+
+function printerMash(){
+  if(!isPlaying||activeScreen!=='s2'||printerDone)return;
+  pressBtn('btn-s2');
+  playPrintTick();
+  const light=document.getElementById('printerLight');
+  light.classList.add('busy');
+  clearTimeout(light._t);light._t=setTimeout(()=>light.classList.remove('busy'),200);
+  printerPct=Math.min(100,printerPct+PRINTER_FILL_PER_PRESS);
+  updatePrinterVisual();
+  const machine=document.querySelector('.printer-machine');
+  machine.style.transform='translateY(1px)';setTimeout(()=>machine.style.transform='translateY(0)',60);
+  if(printerPct>=100&&!printerDone){
+    printerDone=true;
+    if(printerDecayInt)clearInterval(printerDecayInt);
+    playPrintDone();
+    document.getElementById('printerDecayNote').classList.remove('show');
+    setTimeout(()=>{if(isPlaying)goToStep3();},500);
+  }
 }
 
 function goToStep3(){
@@ -448,47 +526,22 @@ function goToStep3(){
 function goToStep4(){
   if(!isPlaying)return;
   const correctT=TREATMENTS.find(t=>t.id===curCond.correct);
-  const wrongPool=TREATMENTS.filter(t=>t.id!==curCond.correct);
-  const wrongs=wrongPool.sort(()=>Math.random()-.5).slice(0,3);
-  const options=[correctT,...wrongs].sort(()=>Math.random()-.5);
   const grid=document.getElementById('treatGrid');
   grid.innerHTML='';
-  options.forEach((t,i)=>{
-    const div=document.createElement('div');
-    div.className='treat-item';
-    div.innerHTML=`<div class="treat-icon">${t.icon}</div><div class="treat-name">${t.name}</div><div class="treat-key">กด ${i+1}</div>`;
-    div.onclick=()=>selectTreat(i);
-    div._treatId=t.id;
-    grid.appendChild(div);
-  });
+  const div=document.createElement('div');
+  div.className='treat-item selected';
+  div.style.cursor='default';
+  div.innerHTML=`<div class="treat-icon">${correctT.icon}</div><div class="treat-name">${correctT.name}</div>`;
+  grid.appendChild(div);
   document.getElementById('treatHint').textContent='💡 '+curCond.hint;
   goTo('s4');
 }
 
-function selectTreat(idx){
+function confirmTreat(){
   if(!isPlaying||activeScreen!=='s4')return;
-  const grid=document.getElementById('treatGrid');
-  const items=grid.querySelectorAll('.treat-item');
-  if(idx>=items.length)return;
   playClick();
-  const chosen=items[idx];
-  if(chosen._treatId===curCond.correct){
-    chosen.classList.add('selected');
-    totalPatients++;correctAnswers++;
-    setTimeout(()=>startMiniGame(),300);
-  }else{
-    chosen.classList.add('wrong');
-    playError();
-    streak=0;multiplier=1;wrongAnswers++;
-    updateHUD();
-    showNotif('❌ ผิด! ต้องใช้: '+TREATMENTS.find(t=>t.id===curCond.correct).name,'fail-n');
-    setTimeout(()=>{totalPatients++;penaltyAndNext();},1200);
-  }
-}
-
-function penaltyAndNext(){
-  if(!isPlaying)return;
-  score=Math.max(0,score-10);updateHUD();nextPatient();
+  totalPatients++;correctAnswers++;
+  setTimeout(()=>startMiniGame(),200);
 }
 
 function startMiniGame(){
