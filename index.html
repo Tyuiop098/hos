@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ใบนัด — TERMINAL 01</title>
+<title>ใบนัด — TERMINAL 01 (Enhanced Edition)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -75,7 +75,7 @@
     color:#8a8d97;
   }
 
-  /* ===== screen ===== */
+  /* ===== screen & reality CRT effects ===== */
   .screen{
     position:relative;
     border-radius:10px;
@@ -90,17 +90,24 @@
     display:flex;
     flex-direction:column;
   }
+  /* CRT Scanlines & Realistic Flicker */
   .screen::after{
     content:"";
     position:absolute; inset:0;
-    background:repeating-linear-gradient(180deg, rgba(255,255,255,.05) 0 1px, transparent 1px 3px);
+    background:repeating-linear-gradient(180deg, rgba(255,255,255,.07) 0 1px, transparent 1px 3px);
     mix-blend-mode:overlay;
     pointer-events:none;
+    animation:crtFlicker 0.15s infinite;
+  }
+  @keyframes crtFlicker{
+    0% { opacity: 0.96; }
+    50% { opacity: 1; }
+    100% { opacity: 0.97; }
   }
   .screen::before{
     content:"";
     position:absolute; inset:0;
-    background:radial-gradient(120% 100% at 50% 50%, transparent 55%, rgba(0,0,0,.55) 100%);
+    background:radial-gradient(120% 100% at 50% 50%, transparent 45%, rgba(0,0,0,.7) 100%);
     pointer-events:none;
   }
 
@@ -269,9 +276,24 @@
   .ticket-label{ font-size:8px; letter-spacing:1.5px; color:#5c6f6a; font-weight:600; }
   .ticket-no{ font-size:22px; letter-spacing:3px; font-weight:700; }
   .ticket-sub{ font-size:7px; color:#8fa3e0; margin-top:3px; letter-spacing:.5px; }
-  .flash{ position:absolute; inset:0; background:#fff; opacity:0; pointer-events:none; z-index:80; border-radius:10px; }
-  .flash.pop{ animation:flash-pop .4s ease; }
-  @keyframes flash-pop{ 0%{opacity:0;} 10%{opacity:1;} 30%{opacity:.85;} 45%{opacity:.15;} 60%{opacity:.55;} 100%{opacity:0;} }
+
+  /* Enhanced Flash Layer */
+  .flash{
+    position:absolute; inset:0;
+    background:#ffffff;
+    opacity:0;
+    pointer-events:none;
+    z-index:90;
+    border-radius:10px;
+  }
+  .flash.pop{ animation:flash-pop .5s cubic-bezier(0.1, 0.9, 0.2, 1); }
+  @keyframes flash-pop{
+    0%{opacity:0;}
+    12%{opacity:1; box-shadow: inset 0 0 80px rgba(255,255,255,1);}
+    35%{opacity:.95;}
+    60%{opacity:.2;}
+    100%{opacity:0;}
+  }
 
   /* ---- card issue stage (3 digit entry) ---- */
   .digit-row{ display:flex; gap:12px; }
@@ -289,20 +311,34 @@
   .digit-box.err{ border-color:var(--red); animation:shake .28s ease; }
   .card-error{ font-size:12px; color:var(--red); height:14px; }
 
-  /* ---- processing: long white rectangle bar ---- */
+  /* ---- processing: long white rectangle bar with laser scan line ---- */
   .bar-outer{
     width:260px; height:26px;
     border:2px solid var(--txt);
     border-radius:3px;
     padding:3px;
     background:rgba(0,0,0,.25);
+    position: relative;
+    overflow: hidden;
   }
   .bar-inner{
     height:100%;
     width:0%;
     background:#fff;
-    box-shadow:0 0 10px rgba(255,255,255,.7);
+    box-shadow:0 0 15px rgba(255,255,255,.9);
     transition:width 1s linear;
+  }
+  /* Laser scan effect during processing */
+  .bar-outer::after {
+    content: "";
+    position: absolute;
+    top: 0; left: -30px; width: 25px; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(95,224,255,0.8), transparent);
+    animation: laserScan 1.2s infinite linear;
+  }
+  @keyframes laserScan {
+    0% { left: -30px; }
+    100% { left: 280px; }
   }
   .bar-label{ font-size:12px; color:var(--txt-dim); letter-spacing:1px; }
 
@@ -458,8 +494,12 @@
     noise.start();
   }
   function shutterSound(){
-    beep(2200, 0.02, 'square', 0.18, 0);
-    beep(500, 0.05, 'square', 0.14, 0.05);
+    beep(2400, 0.03, 'square', 0.22, 0);
+    beep(450, 0.08, 'sawtooth', 0.18, 0.04);
+  }
+  function printerSound(){
+    beep(1200, 0.04, 'triangle', 0.1, 0);
+    beep(900, 0.04, 'triangle', 0.1, 0.05);
   }
   function successChime(){
     beep(660, 0.09, 'square', 0.12, 0);
@@ -715,7 +755,7 @@
     setTimeout(()=> goPrinting(), 400);
   }
 
-  /* ---------- printing: card ejects from a slot before processing ---------- */
+  /* ---------- printing: card ejects with flash & sound ---------- */
   function goPrinting(){
     stage = 'PRINTING';
     const cardNo = cardDigits.join('');
@@ -735,11 +775,18 @@
     `);
     acceptInput = false;
     setFooter('กำลังพิมพ์บัตร...', false);
+    
     setTimeout(()=>{
+      printerSound();
       const ticket = document.getElementById('ticket');
       if(ticket) ticket.classList.add('eject');
-      keyClick();
+      
+      // Flash effect when card pops out successfully
+      const flashEl2 = document.getElementById('flash');
+      flashEl2.classList.remove('pop'); void flashEl2.offsetWidth;
+      flashEl2.classList.add('pop');
     }, 200);
+
     setTimeout(()=> goProcessing(), 1600);
   }
 
